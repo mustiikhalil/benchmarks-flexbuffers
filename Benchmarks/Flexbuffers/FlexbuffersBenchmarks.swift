@@ -81,69 +81,13 @@ let benchmarks = {
   }
 
   Benchmark("Canada-manual-encodeToFlexbufferSharedKeys") { benchmark in
-    var flx = FlexBuffersWriter(flags: .shareKeys)
-    flx.map { writer in
-      writer.add(string: canada.type.rawValue, key: "type")
-      for feature in canada.features {
-        writer.vector(key: "features") { vector in
-          vector.add(string: feature.type.rawValue, key: "type")
-          vector.map(key: "properties") { properties in
-            for (k, v) in feature.properties {
-              properties.add(string: v, key: k)
-            }
-          }
-
-          vector.map(key: "geometry") { geometry in
-            geometry.add(string: feature.geometry.type.rawValue, key: "type")
-            geometry.vector(key: "coordinates") { coordinates in
-              for coordinate in feature.geometry.coordinates {
-                coordinates.vector { vec in
-                  for coord in coordinate {
-                    vec.add(double: coord.longitude, key: "longitude")
-                    vec.add(double: coord.latitude, key: "latitude")
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    flx.finish()
-    blackHole(flx.sizedByteBuffer)
+    let buf = createFlexBufferCanada(canada: canada, flags: .shareKeys)
+    blackHole(buf)
   }
 
   Benchmark("Canada-manual-encodeToFlexbufferSharedKeysAndStrings") { benchmark in
-    var flx = FlexBuffersWriter(flags: .shareKeysAndStrings)
-    flx.map { writer in
-      writer.add(string: canada.type.rawValue, key: "type")
-      for feature in canada.features {
-        writer.vector(key: "features") { vector in
-          vector.add(string: feature.type.rawValue, key: "type")
-          vector.map(key: "properties") { properties in
-            for (k, v) in feature.properties {
-              properties.add(string: v, key: k)
-            }
-          }
-
-          vector.map(key: "geometry") { geometry in
-            geometry.add(string: feature.geometry.type.rawValue, key: "type")
-            geometry.vector(key: "coordinates") { coordinates in
-              for coordinate in feature.geometry.coordinates {
-                coordinates.vector { vec in
-                  for coord in coordinate {
-                    vec.add(double: coord.longitude, key: "longitude")
-                    vec.add(double: coord.latitude, key: "latitude")
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    flx.finish()
-    blackHole(flx.sizedByteBuffer)
+    let buf = createFlexBufferCanada(canada: canada, flags: .shareKeysAndStrings)
+    blackHole(buf)
   }
 
    // MARK: - Twitter
@@ -159,90 +103,96 @@ let benchmarks = {
   }
 
   Benchmark("Twitter-manual-encodeToFlexbufferSharedKeys") { benchmark in
-    var flx = FlexBuffersWriter(flags: .shareKeys)
-    flx.map { outerMap in
-      outerMap.vector(key: "statuses") { outerVector in
-        for item in twitter.statuses {
-          outerVector.map { sMap in
-            sMap.add(uint64: item.id, key: "id")
-            sMap.add(string: item.lang, key: "lang")
-            sMap.add(string: item.text, key: "text")
-            sMap.add(string: item.source, key: "source")
-            sMap.map(key: "metadata") { metaMap in
-              for (k, v) in item.metadata {
-                metaMap.add(string: v, key: k)
-              }
-            }
-            sMap.map(key: "user") { userMap in
-              userMap.add(string: item.user.created_at, key: "created_at")
-              userMap.add(string: item.user.screen_name, key: "screen_name")
-              userMap.add(bool: item.user.default_profile, key: "default_profile")
-              userMap.add(string: item.user.description, key: "description")
-              userMap.add(uint64: item.user.favourites_count, key: "favourites_count")
-              userMap.add(uint64: item.user.followers_count, key: "followers_count")
-              userMap.add(uint64: item.user.friends_count, key: "friends_count")
-              userMap.add(uint64: item.user.id, key: "id")
-              userMap.add(string: item.user.lang, key: "lang")
-              userMap.add(string: item.user.name, key: "name")
-              userMap.add(string: item.user.profile_background_color, key: "profile_background_color")
-              userMap.add(string: item.user.profile_background_image_url, key: "profile_background_image_url")
-              userMap.add(string: item.user.profile_banner_url ?? "", key: "profile_banner_url")
-              userMap.add(string: item.user.profile_image_url ?? "", key: "profile_image_url")
-              userMap.add(bool: item.user.profile_use_background_image, key: "profile_use_background_image")
-              userMap.add(uint64: item.user.statuses_count, key: "statuses_count")
-              userMap.add(string: item.user.url ?? "", key: "url")
-              userMap.add(bool: item.user.verified, key: "verified")
-            }
-            sMap.add(string: item.place ?? "", key: "place")
-          }
-        }
-      }
-    }
-    flx.finish()
-    blackHole(flx.sizedByteBuffer)
+    let buf = createFlexBufferTwitter(twitter: twitter)
+    blackHole(buf)
   }
 
   Benchmark("Twitter-manual-encodeToFlexbufferSharedKeysAndStrings") { benchmark in
-    var flx = FlexBuffersWriter(flags: .shareKeysAndStrings)
-    flx.map { outerMap in
-      outerMap.vector(key: "statuses") { outerVector in
-        for item in twitter.statuses {
-          outerVector.map { sMap in
-            sMap.add(uint64: item.id, key: "id")
-            sMap.add(string: item.lang, key: "lang")
-            sMap.add(string: item.text, key: "text")
-            sMap.add(string: item.source, key: "source")
-            sMap.map(key: "metadata") { metaMap in
-              for (k, v) in item.metadata {
-                metaMap.add(string: v, key: k)
+    let buf = createFlexBufferTwitter(twitter: twitter, flags: .shareKeysAndStrings)
+    blackHole(buf)
+  }
+}
+
+func writeFlexBufferArray(data: Data, url: URL) {
+  let _url = url.deletingPathExtension().appendingPathExtension("bin")
+  FileManager.default.createFile(atPath: _url.absoluteString, contents: Data(data))
+}
+
+@inline(__always)
+func createFlexBufferTwitter(twitter: TwitterArchive, flags: BuilderFlag = .shareKeys) -> [UInt8] {
+  var flx = FlexBuffersWriter(flags: flags)
+  flx.map { outerMap in
+    outerMap.vector(key: "statuses") { outerVector in
+      for item in twitter.statuses {
+        outerVector.map { sMap in
+          sMap.add(uint64: item.id, key: "id")
+          sMap.add(string: item.lang, key: "lang")
+          sMap.add(string: item.text, key: "text")
+          sMap.add(string: item.source, key: "source")
+          sMap.map(key: "metadata") { metaMap in
+            for (k, v) in item.metadata {
+              metaMap.add(string: v, key: k)
+            }
+          }
+          sMap.map(key: "user") { userMap in
+            userMap.add(string: item.user.created_at, key: "created_at")
+            userMap.add(string: item.user.screen_name, key: "screen_name")
+            userMap.add(bool: item.user.default_profile, key: "default_profile")
+            userMap.add(string: item.user.description, key: "description")
+            userMap.add(uint64: item.user.favourites_count, key: "favourites_count")
+            userMap.add(uint64: item.user.followers_count, key: "followers_count")
+            userMap.add(uint64: item.user.friends_count, key: "friends_count")
+            userMap.add(uint64: item.user.id, key: "id")
+            userMap.add(string: item.user.lang, key: "lang")
+            userMap.add(string: item.user.name, key: "name")
+            userMap.add(string: item.user.profile_background_color, key: "profile_background_color")
+            userMap.add(string: item.user.profile_background_image_url, key: "profile_background_image_url")
+            userMap.add(string: item.user.profile_banner_url ?? "", key: "profile_banner_url")
+            userMap.add(string: item.user.profile_image_url ?? "", key: "profile_image_url")
+            userMap.add(bool: item.user.profile_use_background_image, key: "profile_use_background_image")
+            userMap.add(uint64: item.user.statuses_count, key: "statuses_count")
+            userMap.add(string: item.user.url ?? "", key: "url")
+            userMap.add(bool: item.user.verified, key: "verified")
+          }
+          sMap.add(string: item.place ?? "", key: "place")
+        }
+      }
+    }
+  }
+  flx.finish()
+  return flx.sizedByteArray
+}
+
+@inline(__always)
+func createFlexBufferCanada(canada: FeatureCollection, flags: BuilderFlag = .shareKeys) -> [UInt8] {
+  var flx = FlexBuffersWriter(flags: flags)
+  flx.map { writer in
+    writer.add(string: canada.type.rawValue, key: "type")
+    for feature in canada.features {
+      writer.vector(key: "features") { vector in
+        vector.add(string: feature.type.rawValue, key: "type")
+        vector.map(key: "properties") { properties in
+          for (k, v) in feature.properties {
+            properties.add(string: v, key: k)
+          }
+        }
+
+        vector.map(key: "geometry") { geometry in
+          geometry.add(string: feature.geometry.type.rawValue, key: "type")
+          geometry.vector(key: "coordinates") { coordinates in
+            for coordinate in feature.geometry.coordinates {
+              coordinates.vector { vec in
+                for coord in coordinate {
+                  vec.add(double: coord.longitude, key: "longitude")
+                  vec.add(double: coord.latitude, key: "latitude")
+                }
               }
             }
-            sMap.map(key: "user") { userMap in
-              userMap.add(string: item.user.created_at, key: "created_at")
-              userMap.add(string: item.user.screen_name, key: "screen_name")
-              userMap.add(bool: item.user.default_profile, key: "default_profile")
-              userMap.add(string: item.user.description, key: "description")
-              userMap.add(uint64: item.user.favourites_count, key: "favourites_count")
-              userMap.add(uint64: item.user.followers_count, key: "followers_count")
-              userMap.add(uint64: item.user.friends_count, key: "friends_count")
-              userMap.add(uint64: item.user.id, key: "id")
-              userMap.add(string: item.user.lang, key: "lang")
-              userMap.add(string: item.user.name, key: "name")
-              userMap.add(string: item.user.profile_background_color, key: "profile_background_color")
-              userMap.add(string: item.user.profile_background_image_url, key: "profile_background_image_url")
-              userMap.add(string: item.user.profile_banner_url ?? "", key: "profile_banner_url")
-              userMap.add(string: item.user.profile_image_url ?? "", key: "profile_image_url")
-              userMap.add(bool: item.user.profile_use_background_image, key: "profile_use_background_image")
-              userMap.add(uint64: item.user.statuses_count, key: "statuses_count")
-              userMap.add(string: item.user.url ?? "", key: "url")
-              userMap.add(bool: item.user.verified, key: "verified")
-            }
-            sMap.add(string: item.place ?? "", key: "place")
           }
         }
       }
     }
-    flx.finish()
-    blackHole(flx.sizedByteBuffer)
   }
+  flx.finish()
+  return flx.sizedByteArray
 }

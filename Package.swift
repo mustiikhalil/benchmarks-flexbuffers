@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "Benchmarks",
+    name: "benchmarks-flexbuffers",
     platforms: [.macOS(.v15)],
     dependencies: [
       .package(url: "https://github.com/ordo-one/package-benchmark.git", from: "1.27.0"),
