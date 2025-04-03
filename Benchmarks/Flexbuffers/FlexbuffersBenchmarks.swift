@@ -54,6 +54,11 @@ func path(forResource name: String) -> _URL? {
   return _URL(fileURLWithPath: url.path)
 }
 
+func twitterBin(name: String) -> _Data {
+  let path = path(forResource: name)
+  return try! _Data(contentsOf: path!)
+}
+
 @MainActor
 let benchmarks = {
   Benchmark.defaultConfiguration.maxIterations = 1_000_000_000
@@ -65,15 +70,14 @@ let benchmarks = {
   let canadaData = try! _Data(contentsOf: canadaPath!)
   let canada = try! _JSONDecoder().decode(FeatureCollection.self, from: canadaData)
 
-  let twitterPath = path(forResource: "twitter.json")
-  let twitterData = try! _Data(contentsOf: twitterPath!)
-  let twitter = try! _JSONDecoder().decode(TwitterArchive.self, from: twitterData)
-
+  // MARK: DECODING
 
   Benchmark("Canada-decodeFromJSON") { benchmark in
     let result = try _JSONDecoder().decode(FeatureCollection.self, from: canadaData)
     blackHole(result)
   }
+
+  // MARK: ENCODING
 
   Benchmark("Canada-encodeToJSON") { benchmark in
     let data = try _JSONEncoder().encode(canada)
@@ -92,16 +96,40 @@ let benchmarks = {
 
    // MARK: - Twitter
 
+  let twitterPath = path(forResource: "twitter.json")
+  let twitterData = try! _Data(contentsOf: twitterPath!)
+  let twitter = try! _JSONDecoder().decode(TwitterArchive.self, from: twitterData)
+
+  let twitterSharedKeyBin: ByteBuffer = ByteBuffer(data: twitterBin(name: "twitter-sharedKeysAndStrings.bin"))
+  let twittersharedKeysAndStringsBin: ByteBuffer = ByteBuffer(data: twitterBin(name: "twitter-sharedKeysAndStrings.bin"))
+
+  // MARK: DECODING
+
   Benchmark("Twitter-decodeFromJSON") { benchmark in
-    let result = try _JSONDecoder().decode(TwitterArchive.self, from: twitterData)
-    blackHole(result)
+    let result: TwitterArchive = try _JSONDecoder().decode(TwitterArchive.self, from: twitterData)
+    let v = result.statuses[0].user.name
+    blackHole(v)
   }
+
+  Benchmark("Twitter-manual-reading-FlexbufferSharedKeys") { benchmark in
+    let buf = try! getRoot(buffer: twitterSharedKeyBin)
+    let v = buf!.map!["statuses"]!.vector?[0]!.map!["user"]!.map!["name"]!.cString
+    blackHole(v)
+  }
+
+  Benchmark("Twitter-manual-reading-FlexbufferSharedKeysAndStrings") { benchmark in
+    let buf = try! getRoot(buffer: twittersharedKeysAndStringsBin)
+    let v = buf!.map!["statuses"]!.vector?[0]!.map!["user"]!.map!["name"]!.cString
+    blackHole(v)
+  }
+
+  // MARK: ENCODING
 
   Benchmark("Twitter-encodeToJSON") { benchmark in
     let result = try _JSONEncoder().encode(twitter)
     blackHole(result)
   }
-
+  
   Benchmark("Twitter-manual-encodeToFlexbufferSharedKeys") { benchmark in
     let buf = createFlexBufferTwitter(twitter: twitter)
     blackHole(buf)

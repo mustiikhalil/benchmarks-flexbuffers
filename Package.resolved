@@ -1,5 +1,5 @@
 {
-  "originHash" : "bce4df04e9bad7d68fdb64bd8b684b78cdd0abd94472d10f1e4b00ac59018e3b",
+  "originHash" : "f92aa2bb1b735e41d74e46bef17370c1c698c2fbe37c1fe883fcee79d42c0320",
   "pins" : [
     {
       "identity" : "flatbuffers",
@@ -7,7 +7,7 @@
       "location" : "https://github.com/mustiikhalil/flatbuffers.git",
       "state" : {
         "branch" : "flexbuffers",
-        "revision" : "86fbaafc82c0de4c02b1b8508ae632a678405130"
+        "revision" : "7935c9bc31246373973b9665418787a7a92616cd"
       }
     },
     {
@@ -60,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-numerics",
       "state" : {
-        "revision" : "0a5bc04095a675662cf24757cc0640aa2204253b",
-        "version" : "1.0.2"
+        "revision" : "e0ec0f5f3af6f3e4d5e7a19d2af26b481acb6ba8",
+        "version" : "1.0.3"
       }
     },
     {
@@ -69,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-system",
       "state" : {
-        "revision" : "c8a44d836fe7913603e246acab7c528c2e780168",
-        "version" : "1.4.0"
+        "revision" : "a34201439c74b53f0fd71ef11741af7e7caf01e1",
+        "version" : "1.4.2"
       }
     },
     {
