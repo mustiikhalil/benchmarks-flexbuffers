@@ -7,7 +7,7 @@
       "location" : "https://github.com/mustiikhalil/flatbuffers.git",
       "state" : {
         "branch" : "flexbuffers",
-        "revision" : "7935c9bc31246373973b9665418787a7a92616cd"
+        "revision" : "b99b278846481d3d79f5b7315afa1f0f18685e71"
       }
     },
     {
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ordo-one/package-benchmark.git",
       "state" : {
-        "revision" : "ec06262cf296aaa4bd40ed654ccdf9a87fe1879f",
-        "version" : "1.29.2"
+        "revision" : "5c4569a9e7e9acac4db43f31e58252539ca71f0b",
+        "version" : "1.29.3"
       }
     },
     {
