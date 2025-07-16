@@ -1,15 +1,6 @@
 {
-  "originHash" : "f92aa2bb1b735e41d74e46bef17370c1c698c2fbe37c1fe883fcee79d42c0320",
+  "originHash" : "2e1e2b0516a1b1860bc843e011c4deb94c634ebdfa2a0a0c63c9cc796f3a26b2",
   "pins" : [
-    {
-      "identity" : "flatbuffers",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/mustiikhalil/flatbuffers.git",
-      "state" : {
-        "branch" : "flexbuffers",
-        "revision" : "b99b278846481d3d79f5b7315afa1f0f18685e71"
-      }
-    },
     {
       "identity" : "hdrhistogram-swift",
       "kind" : "remoteSourceControl",

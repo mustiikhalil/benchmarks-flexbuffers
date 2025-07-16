@@ -8,7 +8,7 @@ let package = Package(
     platforms: [.macOS(.v15)],
     dependencies: [
       .package(url: "https://github.com/ordo-one/package-benchmark.git", from: "1.27.0"),
-      .package(url: "https://github.com/mustiikhalil/flatbuffers.git", branch: "flexbuffers")
+      .package(path: "./flatbuffers"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
