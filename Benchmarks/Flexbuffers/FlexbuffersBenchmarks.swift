@@ -94,6 +94,16 @@ let benchmarks = {
     blackHole(buf)
   }
 
+  Benchmark("Canada-Cached-manual-encodeToFlexbufferSharedKeys") { benchmark in
+    let buf = createCachedFlexBufferCanada(canada: canada, flags: .shareKeys)
+    blackHole(buf)
+  }
+
+  Benchmark("Canada-Cached-manual-encodeToFlexbufferSharedKeysAndStrings") { benchmark in
+    let buf = createCachedFlexBufferCanada(canada: canada, flags: .shareKeysAndStrings)
+    blackHole(buf)
+  }
+
    // MARK: - Twitter
 
   let twitterPath = path(forResource: "twitter.json")
@@ -223,4 +233,50 @@ func createFlexBufferCanada(canada: FeatureCollection, flags: BuilderFlag = .sha
   }
   flx.finish()
   return flx.sizedByteArray
+}
+
+@inline(__always)
+func createCachedFlexBufferCanada(canada: FeatureCollection, flags: BuilderFlag = .shareKeys) -> [UInt8] {
+var flx = FlexBuffersWriter(flags: flags)
+var cache: [Double: Value] = [:]
+flx.map { writer in
+  writer.add(string: canada.type.rawValue, key: "type")
+  for feature in canada.features {
+    writer.vector(key: "features") { vector in
+      vector.add(string: feature.type.rawValue, key: "type")
+      vector.map(key: "properties") { properties in
+        for (k, v) in feature.properties {
+          properties.add(string: v, key: k)
+        }
+      }
+
+      vector.map(key: "geometry") { geometry in
+        geometry.add(string: feature.geometry.type.rawValue, key: "type")
+        geometry.vector(key: "coordinates") { coordinates in
+          for coordinate in feature.geometry.coordinates {
+            coordinates.vector { vec in
+              for coord in coordinate {
+                if let long = cache[coord.longitude] {
+                  vec.reuse(value: long)
+                } else {
+                  vec.indirect(double: coord.longitude, key: "longitude")
+                  cache[coord.longitude] = vec.lastValue()
+                }
+                
+                if let long = cache[coord.latitude] {
+                  vec.reuse(value: long)
+                } else {
+                  vec.indirect(double: coord.latitude, key: "latitude")
+                  cache[coord.latitude] = vec.lastValue()
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+flx.finish()
+return flx.sizedByteArray
 }
