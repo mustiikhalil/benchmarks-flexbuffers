@@ -2,10 +2,7 @@
 
 ## ⚠️⚠️ WIP
 
-- Currently Decoding Flexbuffers doesnt work
-- Currently only the normal way of writing flexbuffers is supported
 - The vision for the future is to add some type of Codable protocol to make it easier for users to write flexbuffers
-- Havent tested the written flexbuffers Binaries 
 - Test different optimizations for the Canada implementations since i am not familiar with the data yet (use indirect vectors maybe).
 
 ## Introduction
