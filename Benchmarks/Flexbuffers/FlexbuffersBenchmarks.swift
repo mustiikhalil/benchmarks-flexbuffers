@@ -54,9 +54,15 @@ func path(forResource name: String) -> _URL? {
   return _URL(fileURLWithPath: url.path)
 }
 
-func twitterBin(name: String) -> _Data {
+func bin(name: String) -> _Data {
   let path = path(forResource: name)
   return try! _Data(contentsOf: path!)
+}
+
+func writeFlexBufferArray(data: Data, url: URL) {
+  let _url = url.deletingPathExtension().appendingPathExtension("bin")
+  print(_url)
+  FileManager.default.createFile(atPath: _url.absoluteString, contents: Data(data))
 }
 
 @MainActor
@@ -70,80 +76,94 @@ let benchmarks = {
   let canadaData = try! _Data(contentsOf: canadaPath!)
   let canada = try! _JSONDecoder().decode(FeatureCollection.self, from: canadaData)
 
-  // MARK: DECODING
-
-  Benchmark("Canada-decodeFromJSON") { benchmark in
-    let result = try _JSONDecoder().decode(FeatureCollection.self, from: canadaData)
-    blackHole(result)
-  }
-
-  // MARK: ENCODING
-
-  Benchmark("Canada-encodeToJSON") { benchmark in
-    let data = try _JSONEncoder().encode(canada)
-    blackHole(data)
-  }
-
-  Benchmark("Canada-manual-encodeToFlexbufferSharedKeys") { benchmark in
-    let buf = createFlexBufferCanada(canada: canada, flags: .shareKeys)
-    blackHole(buf)
-  }
-
-  Benchmark("Canada-manual-encodeToFlexbufferSharedKeysAndStrings") { benchmark in
-    let buf = createFlexBufferCanada(canada: canada, flags: .shareKeysAndStrings)
-    blackHole(buf)
-  }
-
-   // MARK: - Twitter
-
-  let twitterPath = path(forResource: "twitter.json")
-  let twitterData = try! _Data(contentsOf: twitterPath!)
-  let twitter = try! _JSONDecoder().decode(TwitterArchive.self, from: twitterData)
-
-  let twitterSharedKeyBin: ByteBuffer = ByteBuffer(data: twitterBin(name: "twitter-sharedKeysAndStrings.bin"))
-  let twittersharedKeysAndStringsBin: ByteBuffer = ByteBuffer(data: twitterBin(name: "twitter-sharedKeysAndStrings.bin"))
+   let canadaSharedKeyBin: ByteBuffer = ByteBuffer(data: bin(name: "canada-sharedKeys.bin"))
+   let canadaSharedKeysAndStringsBin: ByteBuffer = ByteBuffer(data: bin(name: "canada-sharedKeysAndStrings.bin"))
 
   // MARK: DECODING
 
-  Benchmark("Twitter-decodeFromJSON") { benchmark in
-    let result: TwitterArchive = try _JSONDecoder().decode(TwitterArchive.self, from: twitterData)
-    let v = result.statuses[0].user.name
-    blackHole(v)
-  }
-
-  Benchmark("Twitter-manual-reading-FlexbufferSharedKeys") { benchmark in
-    let buf = try! getRoot(buffer: twitterSharedKeyBin)
-    let v = buf!.map!["statuses"]!.vector?[0]!.map!["user"]!.map!["name"]!.cString
-    blackHole(v)
-  }
-
-  Benchmark("Twitter-manual-reading-FlexbufferSharedKeysAndStrings") { benchmark in
-    let buf = try! getRoot(buffer: twittersharedKeysAndStringsBin)
-    let v = buf!.map!["statuses"]!.vector?[0]!.map!["user"]!.map!["name"]!.cString
-    blackHole(v)
-  }
-
-  // MARK: ENCODING
-
-  Benchmark("Twitter-encodeToJSON") { benchmark in
-    let result = try _JSONEncoder().encode(twitter)
-    blackHole(result)
-  }
+   Benchmark("canada-decode-JSON") { benchmark in
+     let result = try _JSONDecoder().decode(FeatureCollection.self, from: canadaData)
+     blackHole(result)
+   }
   
-  Benchmark("Twitter-manual-encodeToFlexbufferSharedKeys") { benchmark in
-    let buf = createFlexBufferTwitter(twitter: twitter)
-    blackHole(buf)
-  }
+   Benchmark("canada-decode-manual-FlexbufferSharedKeys") { benchmark in
+     let buf = try! getRoot(buffer: canadaSharedKeyBin)
+     let name = buf!.map!["features"]!.vector?[0]!.map!["properties"]!.map!["name"]!.cString ?? ""
+     let v1 = buf!.map!["features"]!.vector?[0]!.map!["geometry"]!.map!["coordinates"]!.vector?[0]!.vector?[0]!.typedVector?[0]!.double
+     let v2 = buf!.map!["features"]!.vector?[0]!.map!["geometry"]!.map!["coordinates"]!.vector?[0]!.vector?[0]!.typedVector?[1]?.double
+     blackHole(name + String(describing: v1) + String(describing: v2))
+   }
 
-  Benchmark("Twitter-manual-encodeToFlexbufferSharedKeysAndStrings") { benchmark in
-    let buf = createFlexBufferTwitter(twitter: twitter, flags: .shareKeysAndStrings)
-    blackHole(buf)
-  }
-}
+   Benchmark("canada-decode-manual-FlexbufferSharedKeysAndStrings") { benchmark in
+     let buf = try! getRoot(buffer: canadaSharedKeysAndStringsBin)
+     let name = buf!.map!["features"]!.vector?[0]!.map!["properties"]!.map!["name"]!.cString ?? ""
+     let v1 = buf!.map!["features"]!.vector?[0]!.map!["geometry"]!.map!["coordinates"]!.vector?[0]!.vector?[0]!.typedVector?[0]!.double
+     let v2 = buf!.map!["features"]!.vector?[0]!.map!["geometry"]!.map!["coordinates"]!.vector?[0]!.vector?[0]!.typedVector?[1]?.double
+     blackHole(name + String(describing: v1) + String(describing: v2))
+   }
 
-func writeFlexBufferArray(data: Data, url: URL) {
-  let _url = url.deletingPathExtension().appendingPathExtension("bin")
-  FileManager.default.createFile(atPath: _url.absoluteString, contents: Data(data))
+   // MARK: ENCODING
+
+   Benchmark("canada-encode-JSON") { benchmark in
+     let data = try _JSONEncoder().encode(canada)
+     blackHole(data)
+   }
+
+   Benchmark("canada-encode-manual-FlexbufferSharedKeys") { benchmark in
+     let buf = createFlexBufferCanada(canada: canada, flags: .shareKeys)
+     blackHole(buf)
+   }
+
+   Benchmark("canada-encode-manual-FlexbufferSharedKeysAndStrings") { benchmark in
+     let buf = createFlexBufferCanada(canada: canada, flags: .shareKeysAndStrings)
+     blackHole(buf)
+   }
+
+    // MARK: - Twitter
+
+   let twitterPath = path(forResource: "twitter.json")
+   let twitterData = try! _Data(contentsOf: twitterPath!)
+   let twitter = try! _JSONDecoder().decode(TwitterArchive.self, from: twitterData)
+
+   let twitterSharedKeyBin: ByteBuffer = ByteBuffer(data: bin(name: "twitter-sharedKeys.bin"))
+   let twittersharedKeysAndStringsBin: ByteBuffer = ByteBuffer(data: bin(name: "twitter-sharedKeysAndStrings.bin"))
+
+   // MARK: DECODING
+
+   Benchmark("twitter-decode-JSON") { benchmark in
+     let result: TwitterArchive = try _JSONDecoder().decode(TwitterArchive.self, from: twitterData)
+     let v = result.statuses[0].user.name
+     blackHole(v)
+   }
+
+   Benchmark("twitter-decode-manual-FlexbufferSharedKeys") { benchmark in
+     let buf = try! getRoot(buffer: twitterSharedKeyBin)
+     let v = buf!.map!["statuses"]!.vector?[0]!.map!["user"]!.map!["name"]!.cString
+     blackHole(v)
+   }
+
+   Benchmark("twitter-decode-manual-FlexbufferSharedKeysAndStrings") { benchmark in
+     let buf = try! getRoot(buffer: twittersharedKeysAndStringsBin)
+     let v = buf!.map!["statuses"]!.vector?[0]!.map!["user"]!.map!["name"]!.cString
+     blackHole(v)
+   }
+
+   // MARK: ENCODING
+
+   Benchmark("twitter-encode-JSON") { benchmark in
+     let result = try _JSONEncoder().encode(twitter)
+     blackHole(result)
+   }
+  
+   Benchmark("twitter-encode-manual-FlexbufferSharedKeys") { benchmark in
+     let buf = createFlexBufferTwitter(twitter: twitter)
+     blackHole(buf)
+   }
+
+   Benchmark("twitter-encode-manual-FlexbufferSharedKeysAndStrings") { benchmark in
+     let buf = createFlexBufferTwitter(twitter: twitter, flags: .shareKeysAndStrings)
+     blackHole(buf)
+   }
 }
 
 @inline(__always)
@@ -198,21 +218,22 @@ func createFlexBufferCanada(canada: FeatureCollection, flags: BuilderFlag = .sha
     writer.add(string: canada.type.rawValue, key: "type")
     for feature in canada.features {
       writer.vector(key: "features") { vector in
-        vector.add(string: feature.type.rawValue, key: "type")
-        vector.map(key: "properties") { properties in
-          for (k, v) in feature.properties {
-            properties.add(string: v, key: k)
+        vector.map { innerMap in
+          innerMap.add(string: feature.type.rawValue, key: "type")
+          innerMap.map(key: "properties") { properties in
+            for (k, v) in feature.properties {
+              properties.add(string: v, key: k)
+            }
           }
-        }
 
-        vector.map(key: "geometry") { geometry in
-          geometry.add(string: feature.geometry.type.rawValue, key: "type")
-          geometry.vector(key: "coordinates") { coordinates in
-            for coordinate in feature.geometry.coordinates {
-              coordinates.vector { vec in
-                for coord in coordinate {
-                  vec.add(double: coord.longitude, key: "longitude")
-                  vec.add(double: coord.latitude, key: "latitude")
+          innerMap.map(key: "geometry") { geometry in
+            geometry.add(string: feature.geometry.type.rawValue, key: "type")
+            geometry.vector(key: "coordinates") { coordinates in
+              for coordinate in feature.geometry.coordinates {
+                coordinates.vector { vec in
+                  for coord in coordinate {
+                    vec.createFixed(vector: [coord.longitude, coord.latitude])
+                  }
                 }
               }
             }
