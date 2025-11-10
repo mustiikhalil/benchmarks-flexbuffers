@@ -14,28 +14,28 @@
 /// NOTE: JSON Benchmarks where copied from https://github.com/swiftlang/swift-foundation/tree/main/Benchmarks/Benchmarks/JSON
 
 /*
-The MIT License (MIT)
-
-Copyright (c) 2014 Milo Yip
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
+ The MIT License (MIT)
+ 
+ Copyright (c) 2014 Milo Yip
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+ */
 
 import Benchmark
 import FlexBuffers
@@ -71,99 +71,99 @@ let benchmarks = {
   Benchmark.defaultConfiguration.maxDuration = .seconds(3)
   Benchmark.defaultConfiguration.scalingFactor = .kilo
   Benchmark.defaultConfiguration.metrics = [.cpuTotal, .throughput]
-
+  
   let canadaPath = path(forResource: "canada.json")
   let canadaData = try! _Data(contentsOf: canadaPath!)
   let canada = try! _JSONDecoder().decode(FeatureCollection.self, from: canadaData)
-
-   let canadaSharedKeyBin: ByteBuffer = ByteBuffer(data: bin(name: "canada-sharedKeys.bin"))
-   let canadaSharedKeysAndStringsBin: ByteBuffer = ByteBuffer(data: bin(name: "canada-sharedKeysAndStrings.bin"))
-
+  
+  let canadaSharedKeyBin: ByteBuffer = ByteBuffer(data: bin(name: "canada-sharedKeys.bin"))
+  let canadaSharedKeysAndStringsBin: ByteBuffer = ByteBuffer(data: bin(name: "canada-sharedKeysAndStrings.bin"))
+  
   // MARK: DECODING
-
-   Benchmark("canada-decode-JSON") { benchmark in
-     let result = try _JSONDecoder().decode(FeatureCollection.self, from: canadaData)
-     blackHole(result)
-   }
   
-   Benchmark("canada-decode-manual-FlexbufferSharedKeys") { benchmark in
-     let buf = try! getRoot(buffer: canadaSharedKeyBin)
-     let name = buf!.map!["features"]!.vector?[0]!.map!["properties"]!.map!["name"]!.cString ?? ""
-     let v1 = buf!.map!["features"]!.vector?[0]!.map!["geometry"]!.map!["coordinates"]!.vector?[0]!.vector?[0]!.typedVector?[0]!.double
-     let v2 = buf!.map!["features"]!.vector?[0]!.map!["geometry"]!.map!["coordinates"]!.vector?[0]!.vector?[0]!.typedVector?[1]?.double
-     blackHole(name + String(describing: v1) + String(describing: v2))
-   }
-
-   Benchmark("canada-decode-manual-FlexbufferSharedKeysAndStrings") { benchmark in
-     let buf = try! getRoot(buffer: canadaSharedKeysAndStringsBin)
-     let name = buf!.map!["features"]!.vector?[0]!.map!["properties"]!.map!["name"]!.cString ?? ""
-     let v1 = buf!.map!["features"]!.vector?[0]!.map!["geometry"]!.map!["coordinates"]!.vector?[0]!.vector?[0]!.typedVector?[0]!.double
-     let v2 = buf!.map!["features"]!.vector?[0]!.map!["geometry"]!.map!["coordinates"]!.vector?[0]!.vector?[0]!.typedVector?[1]?.double
-     blackHole(name + String(describing: v1) + String(describing: v2))
-   }
-
-   // MARK: ENCODING
-
-   Benchmark("canada-encode-JSON") { benchmark in
-     let data = try _JSONEncoder().encode(canada)
-     blackHole(data)
-   }
-
-   Benchmark("canada-encode-manual-FlexbufferSharedKeys") { benchmark in
-     let buf = createFlexBufferCanada(canada: canada, flags: .shareKeys)
-     blackHole(buf)
-   }
-
-   Benchmark("canada-encode-manual-FlexbufferSharedKeysAndStrings") { benchmark in
-     let buf = createFlexBufferCanada(canada: canada, flags: .shareKeysAndStrings)
-     blackHole(buf)
-   }
-
-    // MARK: - Twitter
-
-   let twitterPath = path(forResource: "twitter.json")
-   let twitterData = try! _Data(contentsOf: twitterPath!)
-   let twitter = try! _JSONDecoder().decode(TwitterArchive.self, from: twitterData)
-
-   let twitterSharedKeyBin: ByteBuffer = ByteBuffer(data: bin(name: "twitter-sharedKeys.bin"))
-   let twittersharedKeysAndStringsBin: ByteBuffer = ByteBuffer(data: bin(name: "twitter-sharedKeysAndStrings.bin"))
-
-   // MARK: DECODING
-
-   Benchmark("twitter-decode-JSON") { benchmark in
-     let result: TwitterArchive = try _JSONDecoder().decode(TwitterArchive.self, from: twitterData)
-     let v = result.statuses[0].user.name
-     blackHole(v)
-   }
-
-   Benchmark("twitter-decode-manual-FlexbufferSharedKeys") { benchmark in
-     let buf = try! getRoot(buffer: twitterSharedKeyBin)
-     let v = buf!.map!["statuses"]!.vector?[0]!.map!["user"]!.map!["name"]!.cString
-     blackHole(v)
-   }
-
-   Benchmark("twitter-decode-manual-FlexbufferSharedKeysAndStrings") { benchmark in
-     let buf = try! getRoot(buffer: twittersharedKeysAndStringsBin)
-     let v = buf!.map!["statuses"]!.vector?[0]!.map!["user"]!.map!["name"]!.cString
-     blackHole(v)
-   }
-
-   // MARK: ENCODING
-
-   Benchmark("twitter-encode-JSON") { benchmark in
-     let result = try _JSONEncoder().encode(twitter)
-     blackHole(result)
-   }
+  Benchmark("canada-decode-JSON") { benchmark in
+    let result = try _JSONDecoder().decode(FeatureCollection.self, from: canadaData)
+    blackHole(result)
+  }
   
-   Benchmark("twitter-encode-manual-FlexbufferSharedKeys") { benchmark in
-     let buf = createFlexBufferTwitter(twitter: twitter)
-     blackHole(buf)
-   }
-
-   Benchmark("twitter-encode-manual-FlexbufferSharedKeysAndStrings") { benchmark in
-     let buf = createFlexBufferTwitter(twitter: twitter, flags: .shareKeysAndStrings)
-     blackHole(buf)
-   }
+  Benchmark("canada-decode-manual-FlexbufferSharedKeys") { benchmark in
+    let buf = try! getRoot(buffer: canadaSharedKeyBin)
+    let name = buf!.map!["features"]!.vector?[0]!.map!["properties"]!.map!["name"]!.cString ?? ""
+    let v1 = buf!.map!["features"]!.vector?[0]!.map!["geometry"]!.map!["coordinates"]!.vector?[0]!.vector?[0]!.typedVector?[0]!.double
+    let v2 = buf!.map!["features"]!.vector?[0]!.map!["geometry"]!.map!["coordinates"]!.vector?[0]!.vector?[0]!.typedVector?[1]?.double
+    blackHole(name + String(describing: v1) + String(describing: v2))
+  }
+  
+  Benchmark("canada-decode-manual-FlexbufferSharedKeysAndStrings") { benchmark in
+    let buf = try! getRoot(buffer: canadaSharedKeysAndStringsBin)
+    let name = buf!.map!["features"]!.vector?[0]!.map!["properties"]!.map!["name"]!.cString ?? ""
+    let v1 = buf!.map!["features"]!.vector?[0]!.map!["geometry"]!.map!["coordinates"]!.vector?[0]!.vector?[0]!.typedVector?[0]!.double
+    let v2 = buf!.map!["features"]!.vector?[0]!.map!["geometry"]!.map!["coordinates"]!.vector?[0]!.vector?[0]!.typedVector?[1]?.double
+    blackHole(name + String(describing: v1) + String(describing: v2))
+  }
+  
+  // MARK: ENCODING
+  
+  Benchmark("canada-encode-JSON") { benchmark in
+    let data = try _JSONEncoder().encode(canada)
+    blackHole(data)
+  }
+  
+  Benchmark("canada-encode-manual-FlexbufferSharedKeys") { benchmark in
+    let buf = createFlexBufferCanada(canada: canada, flags: .shareKeys)
+    blackHole(buf)
+  }
+  
+  Benchmark("canada-encode-manual-FlexbufferSharedKeysAndStrings") { benchmark in
+    let buf = createFlexBufferCanada(canada: canada, flags: .shareKeysAndStrings)
+    blackHole(buf)
+  }
+  
+  // MARK: - Twitter
+  
+  let twitterPath = path(forResource: "twitter.json")
+  let twitterData = try! _Data(contentsOf: twitterPath!)
+  let twitter = try! _JSONDecoder().decode(TwitterArchive.self, from: twitterData)
+  
+  let twitterSharedKeyBin: ByteBuffer = ByteBuffer(data: bin(name: "twitter-sharedKeys.bin"))
+  let twittersharedKeysAndStringsBin: ByteBuffer = ByteBuffer(data: bin(name: "twitter-sharedKeysAndStrings.bin"))
+  
+  // MARK: DECODING
+  
+  Benchmark("twitter-decode-JSON") { benchmark in
+    let result: TwitterArchive = try _JSONDecoder().decode(TwitterArchive.self, from: twitterData)
+    let v = result.statuses[0].user.name
+    blackHole(v)
+  }
+  
+  Benchmark("twitter-decode-manual-FlexbufferSharedKeys") { benchmark in
+    let buf = try! getRoot(buffer: twitterSharedKeyBin)
+    let v = buf!.map!["statuses"]!.vector?[0]!.map!["user"]!.map!["name"]!.cString
+    blackHole(v)
+  }
+  
+  Benchmark("twitter-decode-manual-FlexbufferSharedKeysAndStrings") { benchmark in
+    let buf = try! getRoot(buffer: twittersharedKeysAndStringsBin)
+    let v = buf!.map!["statuses"]!.vector?[0]!.map!["user"]!.map!["name"]!.cString
+    blackHole(v)
+  }
+  
+  // MARK: ENCODING
+  
+  Benchmark("twitter-encode-JSON") { benchmark in
+    let result = try _JSONEncoder().encode(twitter)
+    blackHole(result)
+  }
+  
+  Benchmark("twitter-encode-manual-FlexbufferSharedKeys") { benchmark in
+    let buf = createFlexBufferTwitter(twitter: twitter)
+    blackHole(buf)
+  }
+  
+  Benchmark("twitter-encode-manual-FlexbufferSharedKeysAndStrings") { benchmark in
+    let buf = createFlexBufferTwitter(twitter: twitter, flags: .shareKeysAndStrings)
+    blackHole(buf)
+  }
 }
 
 @inline(__always)
@@ -225,7 +225,7 @@ func createFlexBufferCanada(canada: FeatureCollection, flags: BuilderFlag = .sha
               properties.add(string: v, key: k)
             }
           }
-
+          
           innerMap.map(key: "geometry") { geometry in
             geometry.add(string: feature.geometry.type.rawValue, key: "type")
             geometry.vector(key: "coordinates") { coordinates in

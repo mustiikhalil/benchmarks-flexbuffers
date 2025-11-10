@@ -3,7 +3,6 @@
 ## ⚠️⚠️ WIP
 
 - The vision for the future is to add some type of Codable protocol to make it easier for users to write flexbuffers
-- Test different optimizations for the Canada implementations since i am not familiar with the data yet (use indirect vectors maybe).
 
 ## Introduction
 
@@ -31,6 +30,10 @@ Within the resources folder you would find the binaries and jsons
 | FlexBuffer shared key            |  136K   |   1.3M |
 | FlexBuffer shared key and string |   93K   |   1.3M |
 
+
+## Notes
+
+- Canada test is using a typedvector (swift native arrays) to achive that performance
 
 ## Readable Benchmarks
 
