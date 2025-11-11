@@ -27,6 +27,7 @@ Within the resources folder you would find the binaries and jsons
 | Keys                             | Twitter | Canada |
 | -------------------------------- | :-----: | -----: |
 | JSON                             |  617K   |   2.1M |
+| FlatBuffer                       |  111K   |   878K |
 | FlexBuffer shared key            |  136K   |   1.3M |
 | FlexBuffer shared key and string |   93K   |   1.3M |
 
