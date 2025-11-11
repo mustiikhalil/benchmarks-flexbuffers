@@ -105,14 +105,14 @@ let benchmarks = {
   }
 
   Benchmark("canada-decode-Flatbuffer") { benchmark in
-    let buf: Geo_FeatureCollection = try! getCheckedRoot(byteBuffer: &canadaFlatbuffer)
+    let buf: Geo_FeatureCollection = getRoot(byteBuffer: &canadaFlatbuffer)
     let name = buf.type
     let coords = buf.features[0].geometry?.coordinates[0].coords[0]
     blackHole(String(describing: name) + String(describing: coords))
   }
 
   Benchmark("canada-decode-FlatbufferMutable") { benchmark in
-    let buf: Geo_FeatureCollection = try! getCheckedRoot(byteBuffer: &canadaFlatbuffer)
+    let buf: Geo_FeatureCollection = getRoot(byteBuffer: &canadaFlatbuffer)
     let name = buf.type
     let coords = buf.features[0].geometry?.coordinates[0]
     let lat = coords?.mutableCoords[0].latitude
@@ -171,7 +171,7 @@ let benchmarks = {
   }
 
   Benchmark("twitter-decode-Flatbuffer") { benchmark in
-    let buf: Twitter_TwitterArchive = try! getCheckedRoot(byteBuffer: &twitterFlatbuffer)
+    let buf: Twitter_TwitterArchive = getRoot(byteBuffer: &twitterFlatbuffer)
     blackHole(buf.statuses[0].text)
   }
 
