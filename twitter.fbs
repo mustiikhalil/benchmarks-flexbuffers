@@ -1,0 +1,82 @@
+// FlatBuffers schema generated from Swift struct `TwitterArchive`.
+// Namespace helps organize the schema.
+namespace Twitter;
+
+// Root table
+table TwitterArchive {
+  statuses: [Status];
+}
+
+table Status {
+  id: ulong;
+  lang: string;
+  text: string;
+  source: string;
+  metadata: [MetadataEntry]; // Map<String,String> → represented as key/value pairs
+  user: User;
+  place: string;
+}
+
+// Representing metadata as an array of key/value pairs
+table MetadataEntry {
+  key: string;
+  value: string;
+}
+
+table StatusEntities {
+  hashtags: [Hashtag];
+  media: [MediaItem];
+}
+
+table Hashtag {
+  indices: [ulong];
+  text: string;
+}
+
+table MediaItem {
+  display_url: string;
+  expanded_url: string;
+  id: ulong;
+  indices: [ulong];
+  media_url: string;
+  source_status_id: ulong;
+  type: string;
+  url: string;
+  sizes: [SizeEntry]; // map<string, Size> → key/value entries
+}
+
+// Representing dictionary of sizes
+table SizeEntry {
+  key: string;
+  value: Size;
+}
+
+table Size {
+  h: uint64;
+  w: uint64;
+  resize: string;
+}
+
+table User {
+  created_at: string;
+  default_profile: bool;
+  description: string;
+  favourites_count: uint64;
+  followers_count: uint64;
+  friends_count: uint64;
+  id: uint64;
+  lang: string;
+  name: string;
+  profile_background_color: string;
+  profile_background_image_url: string;
+  profile_banner_url: string; // optional → use default null
+  profile_image_url: string;
+  profile_use_background_image: bool;
+  screen_name: string;
+  statuses_count: uint64;
+  url: string;
+  verified: bool;
+}
+
+// Specify the root type
+root_type TwitterArchive;

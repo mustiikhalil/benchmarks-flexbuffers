@@ -1,0 +1,39 @@
+// FlatBuffers schema generated from Swift GeoJSON-like model
+namespace Geo;
+
+// Root object
+table FeatureCollection {
+  type: string;
+  features: [Feature];
+}
+
+table Feature {
+  type: string;
+  properties: [PropertyEntry]; // Map<String,String> → vector of key/value pairs
+  geometry: Geometry;
+}
+
+// Represent a key/value pair for properties
+table PropertyEntry {
+  key: string;
+  value: string;
+}
+
+table Geometry {
+  type: string;
+  coordinates: [CoordinateList]; // [[Coordinate]] → vector of CoordinateList
+}
+
+// Each CoordinateList represents one polygon ring, etc.
+table CoordinateList {
+  coords: [Coordinate];
+}
+
+// Coordinate is a fixed-size struct (fast, inline storage)
+struct Coordinate {
+  latitude: double;
+  longitude: double;
+}
+
+// Root type for the file
+root_type FeatureCollection;

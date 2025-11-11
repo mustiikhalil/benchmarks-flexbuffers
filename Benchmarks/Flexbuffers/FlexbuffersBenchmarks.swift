@@ -15,19 +15,19 @@
 
 /*
  The MIT License (MIT)
- 
+
  Copyright (c) 2014 Milo Yip
- 
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included in all
  copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -38,6 +38,7 @@
  */
 
 import Benchmark
+import FlatBuffers
 import FlexBuffers
 import func Benchmark.blackHole
 
@@ -59,7 +60,7 @@ func bin(name: String) -> _Data {
   return try! _Data(contentsOf: path!)
 }
 
-func writeFlexBufferArray(data: Data, url: URL) {
+func write(data: Data, url: URL) {
   let _url = url.deletingPathExtension().appendingPathExtension("bin")
   print(_url)
   FileManager.default.createFile(atPath: _url.absoluteString, contents: Data(data))
@@ -71,21 +72,22 @@ let benchmarks = {
   Benchmark.defaultConfiguration.maxDuration = .seconds(3)
   Benchmark.defaultConfiguration.scalingFactor = .kilo
   Benchmark.defaultConfiguration.metrics = [.cpuTotal, .throughput]
-  
+
   let canadaPath = path(forResource: "canada.json")
   let canadaData = try! _Data(contentsOf: canadaPath!)
   let canada = try! _JSONDecoder().decode(FeatureCollection.self, from: canadaData)
-  
-  let canadaSharedKeyBin: ByteBuffer = ByteBuffer(data: bin(name: "canada-sharedKeys.bin"))
-  let canadaSharedKeysAndStringsBin: ByteBuffer = ByteBuffer(data: bin(name: "canada-sharedKeysAndStrings.bin"))
-  
+
+  let canadaSharedKeyBin: FlexBuffers.ByteBuffer = ByteBuffer(data: bin(name: "canada-sharedKeys.bin"))
+  let canadaSharedKeysAndStringsBin: FlexBuffers.ByteBuffer = ByteBuffer(data: bin(name: "canada-sharedKeysAndStrings.bin"))
+  var canadaFlatbuffer: FlatBuffers.ByteBuffer = ByteBuffer(data: bin(name: "canada-flatbuffer.bin"))
+
   // MARK: DECODING
-  
+
   Benchmark("canada-decode-JSON") { benchmark in
     let result = try _JSONDecoder().decode(FeatureCollection.self, from: canadaData)
     blackHole(result)
   }
-  
+
   Benchmark("canada-decode-manual-FlexbufferSharedKeys") { benchmark in
     let buf = try! getRoot(buffer: canadaSharedKeyBin)
     let name = buf!.map!["features"]!.vector?[0]!.map!["properties"]!.map!["name"]!.cString ?? ""
@@ -93,7 +95,7 @@ let benchmarks = {
     let v2 = buf!.map!["features"]!.vector?[0]!.map!["geometry"]!.map!["coordinates"]!.vector?[0]!.vector?[0]!.typedVector?[1]?.double
     blackHole(name + String(describing: v1) + String(describing: v2))
   }
-  
+
   Benchmark("canada-decode-manual-FlexbufferSharedKeysAndStrings") { benchmark in
     let buf = try! getRoot(buffer: canadaSharedKeysAndStringsBin)
     let name = buf!.map!["features"]!.vector?[0]!.map!["properties"]!.map!["name"]!.cString ?? ""
@@ -101,65 +103,94 @@ let benchmarks = {
     let v2 = buf!.map!["features"]!.vector?[0]!.map!["geometry"]!.map!["coordinates"]!.vector?[0]!.vector?[0]!.typedVector?[1]?.double
     blackHole(name + String(describing: v1) + String(describing: v2))
   }
-  
+
+  Benchmark("canada-decode-Flatbuffer") { benchmark in
+    let buf: Geo_FeatureCollection = try! getCheckedRoot(byteBuffer: &canadaFlatbuffer)
+    let name = buf.type
+    let coords = buf.features[0].geometry?.coordinates[0].coords[0]
+    blackHole(String(describing: name) + String(describing: coords))
+  }
+
+  Benchmark("canada-decode-FlatbufferMutable") { benchmark in
+    let buf: Geo_FeatureCollection = try! getCheckedRoot(byteBuffer: &canadaFlatbuffer)
+    let name = buf.type
+    let coords = buf.features[0].geometry?.coordinates[0]
+    let lat = coords?.mutableCoords[0].latitude
+    let long = coords?.mutableCoords[0].longitude
+    blackHole(String(describing: name) + String(describing: lat) + String(describing: long))
+  }
+
   // MARK: ENCODING
-  
+
   Benchmark("canada-encode-JSON") { benchmark in
     let data = try _JSONEncoder().encode(canada)
     blackHole(data)
   }
-  
+
+  Benchmark("canada-encode-Flatbuffer") { benchmark in
+    blackHole(createFlatBufferCanada(canada: canada))
+  }
+
   Benchmark("canada-encode-manual-FlexbufferSharedKeys") { benchmark in
     let buf = createFlexBufferCanada(canada: canada, flags: .shareKeys)
     blackHole(buf)
   }
-  
+
   Benchmark("canada-encode-manual-FlexbufferSharedKeysAndStrings") { benchmark in
     let buf = createFlexBufferCanada(canada: canada, flags: .shareKeysAndStrings)
     blackHole(buf)
   }
-  
+
   // MARK: - Twitter
-  
+
   let twitterPath = path(forResource: "twitter.json")
   let twitterData = try! _Data(contentsOf: twitterPath!)
   let twitter = try! _JSONDecoder().decode(TwitterArchive.self, from: twitterData)
-  
-  let twitterSharedKeyBin: ByteBuffer = ByteBuffer(data: bin(name: "twitter-sharedKeys.bin"))
-  let twittersharedKeysAndStringsBin: ByteBuffer = ByteBuffer(data: bin(name: "twitter-sharedKeysAndStrings.bin"))
-  
+
+  let twitterSharedKeyBin: FlexBuffers.ByteBuffer = ByteBuffer(data: bin(name: "twitter-sharedKeys.bin"))
+  let twittersharedKeysAndStringsBin: FlexBuffers.ByteBuffer = ByteBuffer(data: bin(name: "twitter-sharedKeysAndStrings.bin"))
+  var twitterFlatbuffer: FlatBuffers.ByteBuffer = ByteBuffer(data: bin(name: "twitter-flatbuffers.bin"))
   // MARK: DECODING
-  
+
   Benchmark("twitter-decode-JSON") { benchmark in
     let result: TwitterArchive = try _JSONDecoder().decode(TwitterArchive.self, from: twitterData)
     let v = result.statuses[0].user.name
     blackHole(v)
   }
-  
+
   Benchmark("twitter-decode-manual-FlexbufferSharedKeys") { benchmark in
     let buf = try! getRoot(buffer: twitterSharedKeyBin)
     let v = buf!.map!["statuses"]!.vector?[0]!.map!["user"]!.map!["name"]!.cString
     blackHole(v)
   }
-  
+
   Benchmark("twitter-decode-manual-FlexbufferSharedKeysAndStrings") { benchmark in
     let buf = try! getRoot(buffer: twittersharedKeysAndStringsBin)
     let v = buf!.map!["statuses"]!.vector?[0]!.map!["user"]!.map!["name"]!.cString
     blackHole(v)
   }
-  
+
+  Benchmark("twitter-decode-Flatbuffer") { benchmark in
+    let buf: Twitter_TwitterArchive = try! getCheckedRoot(byteBuffer: &twitterFlatbuffer)
+    blackHole(buf.statuses[0].text)
+  }
+
   // MARK: ENCODING
-  
+
   Benchmark("twitter-encode-JSON") { benchmark in
     let result = try _JSONEncoder().encode(twitter)
     blackHole(result)
   }
-  
+
+  Benchmark("twitter-encode-Flatbuffer") { benchmark in
+    blackHole(createFlatBufferTwitter(twitter: twitter))
+  }
+
   Benchmark("twitter-encode-manual-FlexbufferSharedKeys") { benchmark in
     let buf = createFlexBufferTwitter(twitter: twitter)
     blackHole(buf)
   }
-  
+
   Benchmark("twitter-encode-manual-FlexbufferSharedKeysAndStrings") { benchmark in
     let buf = createFlexBufferTwitter(twitter: twitter, flags: .shareKeysAndStrings)
     blackHole(buf)
@@ -225,7 +256,7 @@ func createFlexBufferCanada(canada: FeatureCollection, flags: BuilderFlag = .sha
               properties.add(string: v, key: k)
             }
           }
-          
+
           innerMap.map(key: "geometry") { geometry in
             geometry.add(string: feature.geometry.type.rawValue, key: "type")
             geometry.vector(key: "coordinates") { coordinates in
@@ -244,4 +275,130 @@ func createFlexBufferCanada(canada: FeatureCollection, flags: BuilderFlag = .sha
   }
   flx.finish()
   return flx.sizedByteArray
+}
+
+@inline(__always)
+func createFlatBufferCanada(canada: FeatureCollection) -> [UInt8] {
+  var builder = FlatBufferBuilder(initialSize: 1024, serializeDefaults: false)
+
+  let featureCollectionOffset = builder.create(string: ObjType.featureCollection.rawValue)
+  let featureOffset = builder.create(string: ObjType.feature.rawValue)
+  let polygonOffset = builder.create(string: ObjType.polygon.rawValue)
+
+  var offsets: [Offset] = []
+  for feature in canada.features {
+    var coordList: [Offset] = []
+    for coord in feature.geometry.coordinates {
+      var structs: [Geo_Coordinate] = []
+      for coordinate in coord {
+        structs.append(Geo_Coordinate(latitude: coordinate.latitude, longitude: coordinate.longitude))
+      }
+
+      coordList.append(Geo_CoordinateList.createCoordinateList(&builder, coordsVectorOffset: builder.createVector(ofStructs: structs)))
+    }
+
+    var propertiesOffsets: [Offset] = []
+    for (k, v) in feature.properties {
+      let key = builder.create(string: k)
+      let value = builder.create(string: v)
+      propertiesOffsets.append(Geo_PropertyEntry.createPropertyEntry(&builder, keyOffset: key, valueOffset: value))
+    }
+
+    let geoOffset = Geo_Geometry.createGeometry(&builder, typeOffset: polygonOffset, coordinatesVectorOffset: builder.createVector(ofOffsets: coordList))
+    let propertiesOffset = builder.createVector(ofOffsets: propertiesOffsets)
+
+    offsets.append(Geo_Feature.createFeature(&builder, typeOffset: featureOffset, propertiesVectorOffset: propertiesOffset, geometryOffset: geoOffset))
+  }
+
+  let featureVectorOffset = builder.createVector(ofOffsets: offsets)
+  let root = Geo_FeatureCollection.createFeatureCollection(
+    &builder,
+    typeOffset: featureCollectionOffset,
+    featuresVectorOffset: featureVectorOffset
+  )
+
+  builder.finish(offset: root)
+  return builder.sizedByteArray
+}
+
+@inline(__always)
+func createFlatBufferTwitter(twitter: TwitterArchive) -> [UInt8] {
+  var builder = FlatBufferBuilder(initialSize: 1024, serializeDefaults: false)
+
+  var statusesOffsets: [Offset] = []
+  for status in twitter.statuses {
+
+    let langoffset = builder.create(string: status.lang)
+    let textOffset = builder.create(string: status.text)
+    let sourceOffset = builder.create(string: status.source)
+    let placeOffset = builder.create(string: status.place)
+
+    let user = status.user
+
+    let createdAt = builder.create(string: user.created_at)
+    let description = builder.create(string: user.description)
+    let lang = builder.create(string: user.lang)
+    let name = builder.create(string: user.name)
+    let profileBackgroundColor = builder.create(string: user.profile_background_color)
+    let profileBackgroundImageUrl = builder.create(string: user.profile_background_image_url)
+    let profileBannerUrl = builder.create(string: user.profile_banner_url)
+    let profileImageUrl = builder.create(string: user.profile_image_url)
+    let screenName = builder.create(string: user.screen_name)
+    let url = builder.create(string: user.url)
+
+    var metadata: [Offset] = []
+    for (key, value) in status.metadata {
+      let keyOffset = builder.create(string: String(describing: key))
+      let valueOffset = builder.create(string: String(describing: value))
+      metadata.append(
+        Twitter_MetadataEntry.createMetadataEntry(
+          &builder,
+          keyOffset: keyOffset,
+          valueOffset: valueOffset
+        )
+      )
+    }
+
+    let metadataVectorOffset = builder.createVector(ofOffsets: metadata)
+
+    let userOffset = Twitter_User.createUser(
+      &builder,
+      createdAtOffset: createdAt,
+      defaultProfile: user.default_profile,
+      descriptionOffset: description,
+      favouritesCount: user.favourites_count,
+      followersCount: user.followers_count,
+      friendsCount: user.friends_count,
+      id: user.id,
+      langOffset: lang,
+      nameOffset: name,
+      profileBackgroundColorOffset: profileBackgroundColor,
+      profileBackgroundImageUrlOffset: profileBackgroundImageUrl,
+      profileBannerUrlOffset: profileBannerUrl,
+      profileImageUrlOffset: profileImageUrl,
+      profileUseBackgroundImage: user.profile_use_background_image,
+      screenNameOffset: screenName,
+      statusesCount: user.statuses_count,
+      urlOffset: url,
+      verified: user.verified
+    )
+
+    statusesOffsets.append(
+      Twitter_Status.createStatus(
+        &builder,
+        id: status.id,
+        langOffset: langoffset,
+        textOffset: textOffset,
+        sourceOffset: sourceOffset,
+        metadataVectorOffset: metadataVectorOffset,
+        userOffset: userOffset,
+        placeOffset: placeOffset
+      )
+    )
+  }
+
+  let offset = builder.createVector(ofOffsets: statusesOffsets)
+  let root = Twitter_TwitterArchive.createTwitterArchive(&builder, statusesVectorOffset: offset)
+  builder.finish(offset: root)
+  return builder.sizedByteArray
 }

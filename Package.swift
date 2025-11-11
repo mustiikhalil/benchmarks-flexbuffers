@@ -17,7 +17,8 @@ let package = Package(
             name: "Benchmarks",
             dependencies: [
               .product(name: "Benchmark", package: "package-benchmark"),
-              .product(name: "FlexBuffers", package: "flatbuffers")
+              .product(name: "FlexBuffers", package: "flatbuffers"),
+              .product(name: "FlatBuffers", package: "flatbuffers")
             ],
             path: "Benchmarks/Flexbuffers",
             resources: [.process("Resources")],
