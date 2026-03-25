@@ -10,22 +10,20 @@ import FlatBuffers
 
 public struct Twitter_TwitterArchive: FlatBufferTable, FlatbuffersVectorInitializable, Verifiable {
 
-  static func validateVersion() { FlatBuffersVersion_25_9_23() }
+  static func validateVersion() { FlatBuffersVersion_25_12_19() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
   private var _accessor: Table
 
   private init(_ t: Table) { _accessor = t }
   public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
 
-  private enum VTOFFSET: VOffset {
-    case statuses = 4
-    var v: Int32 { Int32(self.rawValue) }
-    var p: VOffset { self.rawValue }
+  private struct VT {
+    static let statuses: VOffset = 4
   }
 
-  public var statuses: FlatbufferVector<Twitter_Status> { return _accessor.vector(at: VTOFFSET.statuses.v, byteSize: 4) }
+  public var statuses: FlatbufferVector<Twitter_Status> { return _accessor.vector(at: VT.statuses, byteSize: 4) }
   public static func startTwitterArchive(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 1) }
-  public static func addVectorOf(statuses: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: statuses, at: VTOFFSET.statuses.p) }
+  public static func addVectorOf(statuses: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: statuses, at: VT.statuses) }
   public static func endTwitterArchive(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   public static func createTwitterArchive(
     _ fbb: inout FlatBufferBuilder,
@@ -38,51 +36,49 @@ public struct Twitter_TwitterArchive: FlatBufferTable, FlatbuffersVectorInitiali
 
   public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
     var _v = try verifier.visitTable(at: position)
-    try _v.visit(field: VTOFFSET.statuses.p, fieldName: "statuses", required: false, type: ForwardOffset<Vector<ForwardOffset<Twitter_Status>, Twitter_Status>>.self)
+    try _v.visit(field: VT.statuses, fieldName: "statuses", required: false, type: ForwardOffset<Vector<ForwardOffset<Twitter_Status>, Twitter_Status>>.self)
     _v.finish()
   }
 }
 
 public struct Twitter_Status: FlatBufferTable, FlatbuffersVectorInitializable, Verifiable {
 
-  static func validateVersion() { FlatBuffersVersion_25_9_23() }
+  static func validateVersion() { FlatBuffersVersion_25_12_19() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
   private var _accessor: Table
 
   private init(_ t: Table) { _accessor = t }
   public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
 
-  private enum VTOFFSET: VOffset {
-    case id = 4
-    case lang = 6
-    case text = 8
-    case source = 10
-    case metadata = 12
-    case user = 14
-    case place = 16
-    var v: Int32 { Int32(self.rawValue) }
-    var p: VOffset { self.rawValue }
+  private struct VT {
+    static let id: VOffset = 4
+    static let lang: VOffset = 6
+    static let text: VOffset = 8
+    static let source: VOffset = 10
+    static let metadata: VOffset = 12
+    static let user: VOffset = 14
+    static let place: VOffset = 16
   }
 
-  public var id: UInt64 { let o = _accessor.offset(VTOFFSET.id.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
-  public var lang: String? { let o = _accessor.offset(VTOFFSET.lang.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var langSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.lang.v) }
-  public var text: String? { let o = _accessor.offset(VTOFFSET.text.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var textSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.text.v) }
-  public var source: String? { let o = _accessor.offset(VTOFFSET.source.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var sourceSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.source.v) }
-  public var metadata: FlatbufferVector<Twitter_MetadataEntry> { return _accessor.vector(at: VTOFFSET.metadata.v, byteSize: 4) }
-  public var user: Twitter_User? { let o = _accessor.offset(VTOFFSET.user.v); return o == 0 ? nil : Twitter_User(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
-  public var place: String? { let o = _accessor.offset(VTOFFSET.place.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var placeSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.place.v) }
+  public var id: UInt64 { let o = _accessor.offset(VT.id); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
+  public var lang: String? { let o = _accessor.offset(VT.lang); return o == 0 ? nil : _accessor.string(at: o) }
+  public var langSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.lang) }
+  public var text: String? { let o = _accessor.offset(VT.text); return o == 0 ? nil : _accessor.string(at: o) }
+  public var textSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.text) }
+  public var source: String? { let o = _accessor.offset(VT.source); return o == 0 ? nil : _accessor.string(at: o) }
+  public var sourceSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.source) }
+  public var metadata: FlatbufferVector<Twitter_MetadataEntry> { return _accessor.vector(at: VT.metadata, byteSize: 4) }
+  public var user: Twitter_User? { let o = _accessor.offset(VT.user); return o == 0 ? nil : Twitter_User(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
+  public var place: String? { let o = _accessor.offset(VT.place); return o == 0 ? nil : _accessor.string(at: o) }
+  public var placeSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.place) }
   public static func startStatus(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 7) }
-  public static func add(id: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: id, def: 0, at: VTOFFSET.id.p) }
-  public static func add(lang: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: lang, at: VTOFFSET.lang.p) }
-  public static func add(text: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: text, at: VTOFFSET.text.p) }
-  public static func add(source: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: source, at: VTOFFSET.source.p) }
-  public static func addVectorOf(metadata: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: metadata, at: VTOFFSET.metadata.p) }
-  public static func add(user: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: user, at: VTOFFSET.user.p) }
-  public static func add(place: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: place, at: VTOFFSET.place.p) }
+  public static func add(id: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: id, def: 0, at: VT.id) }
+  public static func add(lang: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: lang, at: VT.lang) }
+  public static func add(text: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: text, at: VT.text) }
+  public static func add(source: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: source, at: VT.source) }
+  public static func addVectorOf(metadata: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: metadata, at: VT.metadata) }
+  public static func add(user: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: user, at: VT.user) }
+  public static func add(place: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: place, at: VT.place) }
   public static func endStatus(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   public static func createStatus(
     _ fbb: inout FlatBufferBuilder,
@@ -107,40 +103,38 @@ public struct Twitter_Status: FlatBufferTable, FlatbuffersVectorInitializable, V
 
   public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
     var _v = try verifier.visitTable(at: position)
-    try _v.visit(field: VTOFFSET.id.p, fieldName: "id", required: false, type: UInt64.self)
-    try _v.visit(field: VTOFFSET.lang.p, fieldName: "lang", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.text.p, fieldName: "text", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.source.p, fieldName: "source", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.metadata.p, fieldName: "metadata", required: false, type: ForwardOffset<Vector<ForwardOffset<Twitter_MetadataEntry>, Twitter_MetadataEntry>>.self)
-    try _v.visit(field: VTOFFSET.user.p, fieldName: "user", required: false, type: ForwardOffset<Twitter_User>.self)
-    try _v.visit(field: VTOFFSET.place.p, fieldName: "place", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.id, fieldName: "id", required: false, type: UInt64.self)
+    try _v.visit(field: VT.lang, fieldName: "lang", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.text, fieldName: "text", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.source, fieldName: "source", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.metadata, fieldName: "metadata", required: false, type: ForwardOffset<Vector<ForwardOffset<Twitter_MetadataEntry>, Twitter_MetadataEntry>>.self)
+    try _v.visit(field: VT.user, fieldName: "user", required: false, type: ForwardOffset<Twitter_User>.self)
+    try _v.visit(field: VT.place, fieldName: "place", required: false, type: ForwardOffset<String>.self)
     _v.finish()
   }
 }
 
 public struct Twitter_MetadataEntry: FlatBufferTable, FlatbuffersVectorInitializable, Verifiable {
 
-  static func validateVersion() { FlatBuffersVersion_25_9_23() }
+  static func validateVersion() { FlatBuffersVersion_25_12_19() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
   private var _accessor: Table
 
   private init(_ t: Table) { _accessor = t }
   public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
 
-  private enum VTOFFSET: VOffset {
-    case key = 4
-    case value = 6
-    var v: Int32 { Int32(self.rawValue) }
-    var p: VOffset { self.rawValue }
+  private struct VT {
+    static let key: VOffset = 4
+    static let value: VOffset = 6
   }
 
-  public var key: String? { let o = _accessor.offset(VTOFFSET.key.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var keySegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.key.v) }
-  public var value: String? { let o = _accessor.offset(VTOFFSET.value.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var valueSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.value.v) }
+  public var key: String? { let o = _accessor.offset(VT.key); return o == 0 ? nil : _accessor.string(at: o) }
+  public var keySegmentArray: [UInt8]? { return _accessor.getVector(at: VT.key) }
+  public var value: String? { let o = _accessor.offset(VT.value); return o == 0 ? nil : _accessor.string(at: o) }
+  public var valueSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.value) }
   public static func startMetadataEntry(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 2) }
-  public static func add(key: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: key, at: VTOFFSET.key.p) }
-  public static func add(value: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: value, at: VTOFFSET.value.p) }
+  public static func add(key: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: key, at: VT.key) }
+  public static func add(value: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: value, at: VT.value) }
   public static func endMetadataEntry(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   public static func createMetadataEntry(
     _ fbb: inout FlatBufferBuilder,
@@ -155,33 +149,31 @@ public struct Twitter_MetadataEntry: FlatBufferTable, FlatbuffersVectorInitializ
 
   public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
     var _v = try verifier.visitTable(at: position)
-    try _v.visit(field: VTOFFSET.key.p, fieldName: "key", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.value.p, fieldName: "value", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.key, fieldName: "key", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.value, fieldName: "value", required: false, type: ForwardOffset<String>.self)
     _v.finish()
   }
 }
 
 public struct Twitter_StatusEntities: FlatBufferTable, FlatbuffersVectorInitializable, Verifiable {
 
-  static func validateVersion() { FlatBuffersVersion_25_9_23() }
+  static func validateVersion() { FlatBuffersVersion_25_12_19() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
   private var _accessor: Table
 
   private init(_ t: Table) { _accessor = t }
   public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
 
-  private enum VTOFFSET: VOffset {
-    case hashtags = 4
-    case media = 6
-    var v: Int32 { Int32(self.rawValue) }
-    var p: VOffset { self.rawValue }
+  private struct VT {
+    static let hashtags: VOffset = 4
+    static let media: VOffset = 6
   }
 
-  public var hashtags: FlatbufferVector<Twitter_Hashtag> { return _accessor.vector(at: VTOFFSET.hashtags.v, byteSize: 4) }
-  public var media: FlatbufferVector<Twitter_MediaItem> { return _accessor.vector(at: VTOFFSET.media.v, byteSize: 4) }
+  public var hashtags: FlatbufferVector<Twitter_Hashtag> { return _accessor.vector(at: VT.hashtags, byteSize: 4) }
+  public var media: FlatbufferVector<Twitter_MediaItem> { return _accessor.vector(at: VT.media, byteSize: 4) }
   public static func startStatusEntities(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 2) }
-  public static func addVectorOf(hashtags: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: hashtags, at: VTOFFSET.hashtags.p) }
-  public static func addVectorOf(media: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: media, at: VTOFFSET.media.p) }
+  public static func addVectorOf(hashtags: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: hashtags, at: VT.hashtags) }
+  public static func addVectorOf(media: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: media, at: VT.media) }
   public static func endStatusEntities(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   public static func createStatusEntities(
     _ fbb: inout FlatBufferBuilder,
@@ -196,35 +188,33 @@ public struct Twitter_StatusEntities: FlatBufferTable, FlatbuffersVectorInitiali
 
   public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
     var _v = try verifier.visitTable(at: position)
-    try _v.visit(field: VTOFFSET.hashtags.p, fieldName: "hashtags", required: false, type: ForwardOffset<Vector<ForwardOffset<Twitter_Hashtag>, Twitter_Hashtag>>.self)
-    try _v.visit(field: VTOFFSET.media.p, fieldName: "media", required: false, type: ForwardOffset<Vector<ForwardOffset<Twitter_MediaItem>, Twitter_MediaItem>>.self)
+    try _v.visit(field: VT.hashtags, fieldName: "hashtags", required: false, type: ForwardOffset<Vector<ForwardOffset<Twitter_Hashtag>, Twitter_Hashtag>>.self)
+    try _v.visit(field: VT.media, fieldName: "media", required: false, type: ForwardOffset<Vector<ForwardOffset<Twitter_MediaItem>, Twitter_MediaItem>>.self)
     _v.finish()
   }
 }
 
 public struct Twitter_Hashtag: FlatBufferTable, FlatbuffersVectorInitializable, Verifiable {
 
-  static func validateVersion() { FlatBuffersVersion_25_9_23() }
+  static func validateVersion() { FlatBuffersVersion_25_12_19() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
   private var _accessor: Table
 
   private init(_ t: Table) { _accessor = t }
   public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
 
-  private enum VTOFFSET: VOffset {
-    case indices = 4
-    case text = 6
-    var v: Int32 { Int32(self.rawValue) }
-    var p: VOffset { self.rawValue }
+  private struct VT {
+    static let indices: VOffset = 4
+    static let text: VOffset = 6
   }
 
-  public var indices: FlatbufferVector<UInt64> { return _accessor.vector(at: VTOFFSET.indices.v, byteSize: 8) }
-  public func withUnsafePointerToIndices<T>(_ body: (UnsafeRawBufferPointer, Int) throws -> T) rethrows -> T? { return try _accessor.withUnsafePointerToSlice(at: VTOFFSET.indices.v, body: body) }
-  public var text: String? { let o = _accessor.offset(VTOFFSET.text.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var textSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.text.v) }
+  public var indices: FlatbufferVector<UInt64> { return _accessor.vector(at: VT.indices, byteSize: 8) }
+  public func withUnsafePointerToIndices<T>(_ body: (UnsafeRawBufferPointer, Int) throws -> T) rethrows -> T? { return try _accessor.withUnsafePointerToSlice(at: VT.indices, body: body) }
+  public var text: String? { let o = _accessor.offset(VT.text); return o == 0 ? nil : _accessor.string(at: o) }
+  public var textSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.text) }
   public static func startHashtag(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 2) }
-  public static func addVectorOf(indices: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: indices, at: VTOFFSET.indices.p) }
-  public static func add(text: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: text, at: VTOFFSET.text.p) }
+  public static func addVectorOf(indices: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: indices, at: VT.indices) }
+  public static func add(text: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: text, at: VT.text) }
   public static func endHashtag(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   public static func createHashtag(
     _ fbb: inout FlatBufferBuilder,
@@ -239,60 +229,58 @@ public struct Twitter_Hashtag: FlatBufferTable, FlatbuffersVectorInitializable, 
 
   public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
     var _v = try verifier.visitTable(at: position)
-    try _v.visit(field: VTOFFSET.indices.p, fieldName: "indices", required: false, type: ForwardOffset<Vector<UInt64, UInt64>>.self)
-    try _v.visit(field: VTOFFSET.text.p, fieldName: "text", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.indices, fieldName: "indices", required: false, type: ForwardOffset<Vector<UInt64, UInt64>>.self)
+    try _v.visit(field: VT.text, fieldName: "text", required: false, type: ForwardOffset<String>.self)
     _v.finish()
   }
 }
 
 public struct Twitter_MediaItem: FlatBufferTable, FlatbuffersVectorInitializable, Verifiable {
 
-  static func validateVersion() { FlatBuffersVersion_25_9_23() }
+  static func validateVersion() { FlatBuffersVersion_25_12_19() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
   private var _accessor: Table
 
   private init(_ t: Table) { _accessor = t }
   public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
 
-  private enum VTOFFSET: VOffset {
-    case displayUrl = 4
-    case expandedUrl = 6
-    case id = 8
-    case indices = 10
-    case mediaUrl = 12
-    case sourceStatusId = 14
-    case type = 16
-    case url = 18
-    case sizes = 20
-    var v: Int32 { Int32(self.rawValue) }
-    var p: VOffset { self.rawValue }
+  private struct VT {
+    static let displayUrl: VOffset = 4
+    static let expandedUrl: VOffset = 6
+    static let id: VOffset = 8
+    static let indices: VOffset = 10
+    static let mediaUrl: VOffset = 12
+    static let sourceStatusId: VOffset = 14
+    static let type: VOffset = 16
+    static let url: VOffset = 18
+    static let sizes: VOffset = 20
   }
 
-  public var displayUrl: String? { let o = _accessor.offset(VTOFFSET.displayUrl.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var displayUrlSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.displayUrl.v) }
-  public var expandedUrl: String? { let o = _accessor.offset(VTOFFSET.expandedUrl.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var expandedUrlSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.expandedUrl.v) }
-  public var id: UInt64 { let o = _accessor.offset(VTOFFSET.id.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
-  public var indices: FlatbufferVector<UInt64> { return _accessor.vector(at: VTOFFSET.indices.v, byteSize: 8) }
-  public func withUnsafePointerToIndices<T>(_ body: (UnsafeRawBufferPointer, Int) throws -> T) rethrows -> T? { return try _accessor.withUnsafePointerToSlice(at: VTOFFSET.indices.v, body: body) }
-  public var mediaUrl: String? { let o = _accessor.offset(VTOFFSET.mediaUrl.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var mediaUrlSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.mediaUrl.v) }
-  public var sourceStatusId: UInt64 { let o = _accessor.offset(VTOFFSET.sourceStatusId.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
-  public var type: String? { let o = _accessor.offset(VTOFFSET.type.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var typeSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.type.v) }
-  public var url: String? { let o = _accessor.offset(VTOFFSET.url.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var urlSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.url.v) }
-  public var sizes: FlatbufferVector<Twitter_SizeEntry> { return _accessor.vector(at: VTOFFSET.sizes.v, byteSize: 4) }
+  public var displayUrl: String? { let o = _accessor.offset(VT.displayUrl); return o == 0 ? nil : _accessor.string(at: o) }
+  public var displayUrlSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.displayUrl) }
+  public var expandedUrl: String? { let o = _accessor.offset(VT.expandedUrl); return o == 0 ? nil : _accessor.string(at: o) }
+  public var expandedUrlSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.expandedUrl) }
+  public var id: UInt64 { let o = _accessor.offset(VT.id); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
+  public var indices: FlatbufferVector<UInt64> { return _accessor.vector(at: VT.indices, byteSize: 8) }
+  public func withUnsafePointerToIndices<T>(_ body: (UnsafeRawBufferPointer, Int) throws -> T) rethrows -> T? { return try _accessor.withUnsafePointerToSlice(at: VT.indices, body: body) }
+  public var mediaUrl: String? { let o = _accessor.offset(VT.mediaUrl); return o == 0 ? nil : _accessor.string(at: o) }
+  public var mediaUrlSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.mediaUrl) }
+  public var sourceStatusId: UInt64 { let o = _accessor.offset(VT.sourceStatusId); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
+  public var type: String? { let o = _accessor.offset(VT.type); return o == 0 ? nil : _accessor.string(at: o) }
+  public var typeSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.type) }
+  public var url: String? { let o = _accessor.offset(VT.url); return o == 0 ? nil : _accessor.string(at: o) }
+  public var urlSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.url) }
+  public var sizes: FlatbufferVector<Twitter_SizeEntry> { return _accessor.vector(at: VT.sizes, byteSize: 4) }
   public static func startMediaItem(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 9) }
-  public static func add(displayUrl: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: displayUrl, at: VTOFFSET.displayUrl.p) }
-  public static func add(expandedUrl: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: expandedUrl, at: VTOFFSET.expandedUrl.p) }
-  public static func add(id: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: id, def: 0, at: VTOFFSET.id.p) }
-  public static func addVectorOf(indices: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: indices, at: VTOFFSET.indices.p) }
-  public static func add(mediaUrl: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: mediaUrl, at: VTOFFSET.mediaUrl.p) }
-  public static func add(sourceStatusId: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: sourceStatusId, def: 0, at: VTOFFSET.sourceStatusId.p) }
-  public static func add(type: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: type, at: VTOFFSET.type.p) }
-  public static func add(url: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: url, at: VTOFFSET.url.p) }
-  public static func addVectorOf(sizes: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: sizes, at: VTOFFSET.sizes.p) }
+  public static func add(displayUrl: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: displayUrl, at: VT.displayUrl) }
+  public static func add(expandedUrl: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: expandedUrl, at: VT.expandedUrl) }
+  public static func add(id: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: id, def: 0, at: VT.id) }
+  public static func addVectorOf(indices: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: indices, at: VT.indices) }
+  public static func add(mediaUrl: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: mediaUrl, at: VT.mediaUrl) }
+  public static func add(sourceStatusId: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: sourceStatusId, def: 0, at: VT.sourceStatusId) }
+  public static func add(type: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: type, at: VT.type) }
+  public static func add(url: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: url, at: VT.url) }
+  public static func addVectorOf(sizes: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: sizes, at: VT.sizes) }
   public static func endMediaItem(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   public static func createMediaItem(
     _ fbb: inout FlatBufferBuilder,
@@ -321,41 +309,39 @@ public struct Twitter_MediaItem: FlatBufferTable, FlatbuffersVectorInitializable
 
   public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
     var _v = try verifier.visitTable(at: position)
-    try _v.visit(field: VTOFFSET.displayUrl.p, fieldName: "displayUrl", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.expandedUrl.p, fieldName: "expandedUrl", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.id.p, fieldName: "id", required: false, type: UInt64.self)
-    try _v.visit(field: VTOFFSET.indices.p, fieldName: "indices", required: false, type: ForwardOffset<Vector<UInt64, UInt64>>.self)
-    try _v.visit(field: VTOFFSET.mediaUrl.p, fieldName: "mediaUrl", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.sourceStatusId.p, fieldName: "sourceStatusId", required: false, type: UInt64.self)
-    try _v.visit(field: VTOFFSET.type.p, fieldName: "type", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.url.p, fieldName: "url", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.sizes.p, fieldName: "sizes", required: false, type: ForwardOffset<Vector<ForwardOffset<Twitter_SizeEntry>, Twitter_SizeEntry>>.self)
+    try _v.visit(field: VT.displayUrl, fieldName: "displayUrl", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.expandedUrl, fieldName: "expandedUrl", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.id, fieldName: "id", required: false, type: UInt64.self)
+    try _v.visit(field: VT.indices, fieldName: "indices", required: false, type: ForwardOffset<Vector<UInt64, UInt64>>.self)
+    try _v.visit(field: VT.mediaUrl, fieldName: "mediaUrl", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.sourceStatusId, fieldName: "sourceStatusId", required: false, type: UInt64.self)
+    try _v.visit(field: VT.type, fieldName: "type", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.url, fieldName: "url", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.sizes, fieldName: "sizes", required: false, type: ForwardOffset<Vector<ForwardOffset<Twitter_SizeEntry>, Twitter_SizeEntry>>.self)
     _v.finish()
   }
 }
 
 public struct Twitter_SizeEntry: FlatBufferTable, FlatbuffersVectorInitializable, Verifiable {
 
-  static func validateVersion() { FlatBuffersVersion_25_9_23() }
+  static func validateVersion() { FlatBuffersVersion_25_12_19() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
   private var _accessor: Table
 
   private init(_ t: Table) { _accessor = t }
   public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
 
-  private enum VTOFFSET: VOffset {
-    case key = 4
-    case value = 6
-    var v: Int32 { Int32(self.rawValue) }
-    var p: VOffset { self.rawValue }
+  private struct VT {
+    static let key: VOffset = 4
+    static let value: VOffset = 6
   }
 
-  public var key: String? { let o = _accessor.offset(VTOFFSET.key.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var keySegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.key.v) }
-  public var value: Twitter_Size? { let o = _accessor.offset(VTOFFSET.value.v); return o == 0 ? nil : Twitter_Size(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
+  public var key: String? { let o = _accessor.offset(VT.key); return o == 0 ? nil : _accessor.string(at: o) }
+  public var keySegmentArray: [UInt8]? { return _accessor.getVector(at: VT.key) }
+  public var value: Twitter_Size? { let o = _accessor.offset(VT.value); return o == 0 ? nil : Twitter_Size(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
   public static func startSizeEntry(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 2) }
-  public static func add(key: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: key, at: VTOFFSET.key.p) }
-  public static func add(value: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: value, at: VTOFFSET.value.p) }
+  public static func add(key: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: key, at: VT.key) }
+  public static func add(value: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: value, at: VT.value) }
   public static func endSizeEntry(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   public static func createSizeEntry(
     _ fbb: inout FlatBufferBuilder,
@@ -370,37 +356,35 @@ public struct Twitter_SizeEntry: FlatBufferTable, FlatbuffersVectorInitializable
 
   public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
     var _v = try verifier.visitTable(at: position)
-    try _v.visit(field: VTOFFSET.key.p, fieldName: "key", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.value.p, fieldName: "value", required: false, type: ForwardOffset<Twitter_Size>.self)
+    try _v.visit(field: VT.key, fieldName: "key", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.value, fieldName: "value", required: false, type: ForwardOffset<Twitter_Size>.self)
     _v.finish()
   }
 }
 
 public struct Twitter_Size: FlatBufferTable, FlatbuffersVectorInitializable, Verifiable {
 
-  static func validateVersion() { FlatBuffersVersion_25_9_23() }
+  static func validateVersion() { FlatBuffersVersion_25_12_19() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
   private var _accessor: Table
 
   private init(_ t: Table) { _accessor = t }
   public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
 
-  private enum VTOFFSET: VOffset {
-    case h = 4
-    case w = 6
-    case resize = 8
-    var v: Int32 { Int32(self.rawValue) }
-    var p: VOffset { self.rawValue }
+  private struct VT {
+    static let h: VOffset = 4
+    static let w: VOffset = 6
+    static let resize: VOffset = 8
   }
 
-  public var h: UInt64 { let o = _accessor.offset(VTOFFSET.h.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
-  public var w: UInt64 { let o = _accessor.offset(VTOFFSET.w.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
-  public var resize: String? { let o = _accessor.offset(VTOFFSET.resize.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var resizeSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.resize.v) }
+  public var h: UInt64 { let o = _accessor.offset(VT.h); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
+  public var w: UInt64 { let o = _accessor.offset(VT.w); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
+  public var resize: String? { let o = _accessor.offset(VT.resize); return o == 0 ? nil : _accessor.string(at: o) }
+  public var resizeSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.resize) }
   public static func startSize(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 3) }
-  public static func add(h: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: h, def: 0, at: VTOFFSET.h.p) }
-  public static func add(w: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: w, def: 0, at: VTOFFSET.w.p) }
-  public static func add(resize: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: resize, at: VTOFFSET.resize.p) }
+  public static func add(h: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: h, def: 0, at: VT.h) }
+  public static func add(w: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: w, def: 0, at: VT.w) }
+  public static func add(resize: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: resize, at: VT.resize) }
   public static func endSize(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   public static func createSize(
     _ fbb: inout FlatBufferBuilder,
@@ -417,95 +401,93 @@ public struct Twitter_Size: FlatBufferTable, FlatbuffersVectorInitializable, Ver
 
   public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
     var _v = try verifier.visitTable(at: position)
-    try _v.visit(field: VTOFFSET.h.p, fieldName: "h", required: false, type: UInt64.self)
-    try _v.visit(field: VTOFFSET.w.p, fieldName: "w", required: false, type: UInt64.self)
-    try _v.visit(field: VTOFFSET.resize.p, fieldName: "resize", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.h, fieldName: "h", required: false, type: UInt64.self)
+    try _v.visit(field: VT.w, fieldName: "w", required: false, type: UInt64.self)
+    try _v.visit(field: VT.resize, fieldName: "resize", required: false, type: ForwardOffset<String>.self)
     _v.finish()
   }
 }
 
 public struct Twitter_User: FlatBufferTable, FlatbuffersVectorInitializable, Verifiable {
 
-  static func validateVersion() { FlatBuffersVersion_25_9_23() }
+  static func validateVersion() { FlatBuffersVersion_25_12_19() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
   private var _accessor: Table
 
   private init(_ t: Table) { _accessor = t }
   public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
 
-  private enum VTOFFSET: VOffset {
-    case createdAt = 4
-    case defaultProfile = 6
-    case description = 8
-    case favouritesCount = 10
-    case followersCount = 12
-    case friendsCount = 14
-    case id = 16
-    case lang = 18
-    case name = 20
-    case profileBackgroundColor = 22
-    case profileBackgroundImageUrl = 24
-    case profileBannerUrl = 26
-    case profileImageUrl = 28
-    case profileUseBackgroundImage = 30
-    case screenName = 32
-    case statusesCount = 34
-    case url = 36
-    case verified = 38
-    var v: Int32 { Int32(self.rawValue) }
-    var p: VOffset { self.rawValue }
+  private struct VT {
+    static let createdAt: VOffset = 4
+    static let defaultProfile: VOffset = 6
+    static let description: VOffset = 8
+    static let favouritesCount: VOffset = 10
+    static let followersCount: VOffset = 12
+    static let friendsCount: VOffset = 14
+    static let id: VOffset = 16
+    static let lang: VOffset = 18
+    static let name: VOffset = 20
+    static let profileBackgroundColor: VOffset = 22
+    static let profileBackgroundImageUrl: VOffset = 24
+    static let profileBannerUrl: VOffset = 26
+    static let profileImageUrl: VOffset = 28
+    static let profileUseBackgroundImage: VOffset = 30
+    static let screenName: VOffset = 32
+    static let statusesCount: VOffset = 34
+    static let url: VOffset = 36
+    static let verified: VOffset = 38
   }
 
-  public var createdAt: String? { let o = _accessor.offset(VTOFFSET.createdAt.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var createdAtSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.createdAt.v) }
-  public var defaultProfile: Bool { let o = _accessor.offset(VTOFFSET.defaultProfile.v); return o == 0 ? false : _accessor.readBuffer(of: Bool.self, at: o) }
-  public var description: String? { let o = _accessor.offset(VTOFFSET.description.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var descriptionSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.description.v) }
-  public var favouritesCount: UInt64 { let o = _accessor.offset(VTOFFSET.favouritesCount.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
-  public var followersCount: UInt64 { let o = _accessor.offset(VTOFFSET.followersCount.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
-  public var friendsCount: UInt64 { let o = _accessor.offset(VTOFFSET.friendsCount.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
-  public var id: UInt64 { let o = _accessor.offset(VTOFFSET.id.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
-  public var lang: String? { let o = _accessor.offset(VTOFFSET.lang.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var langSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.lang.v) }
-  public var name: String? { let o = _accessor.offset(VTOFFSET.name.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var nameSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.name.v) }
-  public var profileBackgroundColor: String? { let o = _accessor.offset(VTOFFSET.profileBackgroundColor.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var profileBackgroundColorSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.profileBackgroundColor.v) }
-  public var profileBackgroundImageUrl: String? { let o = _accessor.offset(VTOFFSET.profileBackgroundImageUrl.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var profileBackgroundImageUrlSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.profileBackgroundImageUrl.v) }
-  public var profileBannerUrl: String? { let o = _accessor.offset(VTOFFSET.profileBannerUrl.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var profileBannerUrlSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.profileBannerUrl.v) }
-  public var profileImageUrl: String? { let o = _accessor.offset(VTOFFSET.profileImageUrl.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var profileImageUrlSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.profileImageUrl.v) }
-  public var profileUseBackgroundImage: Bool { let o = _accessor.offset(VTOFFSET.profileUseBackgroundImage.v); return o == 0 ? false : _accessor.readBuffer(of: Bool.self, at: o) }
-  public var screenName: String? { let o = _accessor.offset(VTOFFSET.screenName.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var screenNameSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.screenName.v) }
-  public var statusesCount: UInt64 { let o = _accessor.offset(VTOFFSET.statusesCount.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
-  public var url: String? { let o = _accessor.offset(VTOFFSET.url.v); return o == 0 ? nil : _accessor.string(at: o) }
-  public var urlSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.url.v) }
-  public var verified: Bool { let o = _accessor.offset(VTOFFSET.verified.v); return o == 0 ? false : _accessor.readBuffer(of: Bool.self, at: o) }
+  public var createdAt: String? { let o = _accessor.offset(VT.createdAt); return o == 0 ? nil : _accessor.string(at: o) }
+  public var createdAtSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.createdAt) }
+  public var defaultProfile: Bool { let o = _accessor.offset(VT.defaultProfile); return o == 0 ? false : _accessor.readBuffer(of: Bool.self, at: o) }
+  public var description: String? { let o = _accessor.offset(VT.description); return o == 0 ? nil : _accessor.string(at: o) }
+  public var descriptionSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.description) }
+  public var favouritesCount: UInt64 { let o = _accessor.offset(VT.favouritesCount); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
+  public var followersCount: UInt64 { let o = _accessor.offset(VT.followersCount); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
+  public var friendsCount: UInt64 { let o = _accessor.offset(VT.friendsCount); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
+  public var id: UInt64 { let o = _accessor.offset(VT.id); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
+  public var lang: String? { let o = _accessor.offset(VT.lang); return o == 0 ? nil : _accessor.string(at: o) }
+  public var langSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.lang) }
+  public var name: String? { let o = _accessor.offset(VT.name); return o == 0 ? nil : _accessor.string(at: o) }
+  public var nameSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.name) }
+  public var profileBackgroundColor: String? { let o = _accessor.offset(VT.profileBackgroundColor); return o == 0 ? nil : _accessor.string(at: o) }
+  public var profileBackgroundColorSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.profileBackgroundColor) }
+  public var profileBackgroundImageUrl: String? { let o = _accessor.offset(VT.profileBackgroundImageUrl); return o == 0 ? nil : _accessor.string(at: o) }
+  public var profileBackgroundImageUrlSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.profileBackgroundImageUrl) }
+  public var profileBannerUrl: String? { let o = _accessor.offset(VT.profileBannerUrl); return o == 0 ? nil : _accessor.string(at: o) }
+  public var profileBannerUrlSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.profileBannerUrl) }
+  public var profileImageUrl: String? { let o = _accessor.offset(VT.profileImageUrl); return o == 0 ? nil : _accessor.string(at: o) }
+  public var profileImageUrlSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.profileImageUrl) }
+  public var profileUseBackgroundImage: Bool { let o = _accessor.offset(VT.profileUseBackgroundImage); return o == 0 ? false : _accessor.readBuffer(of: Bool.self, at: o) }
+  public var screenName: String? { let o = _accessor.offset(VT.screenName); return o == 0 ? nil : _accessor.string(at: o) }
+  public var screenNameSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.screenName) }
+  public var statusesCount: UInt64 { let o = _accessor.offset(VT.statusesCount); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
+  public var url: String? { let o = _accessor.offset(VT.url); return o == 0 ? nil : _accessor.string(at: o) }
+  public var urlSegmentArray: [UInt8]? { return _accessor.getVector(at: VT.url) }
+  public var verified: Bool { let o = _accessor.offset(VT.verified); return o == 0 ? false : _accessor.readBuffer(of: Bool.self, at: o) }
   public static func startUser(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 18) }
-  public static func add(createdAt: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: createdAt, at: VTOFFSET.createdAt.p) }
+  public static func add(createdAt: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: createdAt, at: VT.createdAt) }
   public static func add(defaultProfile: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: defaultProfile, def: false,
-   at: VTOFFSET.defaultProfile.p) }
-  public static func add(description: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: description, at: VTOFFSET.description.p) }
-  public static func add(favouritesCount: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: favouritesCount, def: 0, at: VTOFFSET.favouritesCount.p) }
-  public static func add(followersCount: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: followersCount, def: 0, at: VTOFFSET.followersCount.p) }
-  public static func add(friendsCount: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: friendsCount, def: 0, at: VTOFFSET.friendsCount.p) }
-  public static func add(id: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: id, def: 0, at: VTOFFSET.id.p) }
-  public static func add(lang: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: lang, at: VTOFFSET.lang.p) }
-  public static func add(name: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: name, at: VTOFFSET.name.p) }
-  public static func add(profileBackgroundColor: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: profileBackgroundColor, at: VTOFFSET.profileBackgroundColor.p) }
-  public static func add(profileBackgroundImageUrl: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: profileBackgroundImageUrl, at: VTOFFSET.profileBackgroundImageUrl.p) }
-  public static func add(profileBannerUrl: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: profileBannerUrl, at: VTOFFSET.profileBannerUrl.p) }
-  public static func add(profileImageUrl: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: profileImageUrl, at: VTOFFSET.profileImageUrl.p) }
+   at: VT.defaultProfile) }
+  public static func add(description: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: description, at: VT.description) }
+  public static func add(favouritesCount: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: favouritesCount, def: 0, at: VT.favouritesCount) }
+  public static func add(followersCount: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: followersCount, def: 0, at: VT.followersCount) }
+  public static func add(friendsCount: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: friendsCount, def: 0, at: VT.friendsCount) }
+  public static func add(id: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: id, def: 0, at: VT.id) }
+  public static func add(lang: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: lang, at: VT.lang) }
+  public static func add(name: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: name, at: VT.name) }
+  public static func add(profileBackgroundColor: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: profileBackgroundColor, at: VT.profileBackgroundColor) }
+  public static func add(profileBackgroundImageUrl: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: profileBackgroundImageUrl, at: VT.profileBackgroundImageUrl) }
+  public static func add(profileBannerUrl: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: profileBannerUrl, at: VT.profileBannerUrl) }
+  public static func add(profileImageUrl: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: profileImageUrl, at: VT.profileImageUrl) }
   public static func add(profileUseBackgroundImage: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: profileUseBackgroundImage, def: false,
-   at: VTOFFSET.profileUseBackgroundImage.p) }
-  public static func add(screenName: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: screenName, at: VTOFFSET.screenName.p) }
-  public static func add(statusesCount: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: statusesCount, def: 0, at: VTOFFSET.statusesCount.p) }
-  public static func add(url: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: url, at: VTOFFSET.url.p) }
+   at: VT.profileUseBackgroundImage) }
+  public static func add(screenName: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: screenName, at: VT.screenName) }
+  public static func add(statusesCount: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: statusesCount, def: 0, at: VT.statusesCount) }
+  public static func add(url: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: url, at: VT.url) }
   public static func add(verified: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: verified, def: false,
-   at: VTOFFSET.verified.p) }
+   at: VT.verified) }
   public static func endUser(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   public static func createUser(
     _ fbb: inout FlatBufferBuilder,
@@ -552,25 +534,24 @@ public struct Twitter_User: FlatBufferTable, FlatbuffersVectorInitializable, Ver
 
   public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
     var _v = try verifier.visitTable(at: position)
-    try _v.visit(field: VTOFFSET.createdAt.p, fieldName: "createdAt", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.defaultProfile.p, fieldName: "defaultProfile", required: false, type: Bool.self)
-    try _v.visit(field: VTOFFSET.description.p, fieldName: "description", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.favouritesCount.p, fieldName: "favouritesCount", required: false, type: UInt64.self)
-    try _v.visit(field: VTOFFSET.followersCount.p, fieldName: "followersCount", required: false, type: UInt64.self)
-    try _v.visit(field: VTOFFSET.friendsCount.p, fieldName: "friendsCount", required: false, type: UInt64.self)
-    try _v.visit(field: VTOFFSET.id.p, fieldName: "id", required: false, type: UInt64.self)
-    try _v.visit(field: VTOFFSET.lang.p, fieldName: "lang", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.name.p, fieldName: "name", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.profileBackgroundColor.p, fieldName: "profileBackgroundColor", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.profileBackgroundImageUrl.p, fieldName: "profileBackgroundImageUrl", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.profileBannerUrl.p, fieldName: "profileBannerUrl", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.profileImageUrl.p, fieldName: "profileImageUrl", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.profileUseBackgroundImage.p, fieldName: "profileUseBackgroundImage", required: false, type: Bool.self)
-    try _v.visit(field: VTOFFSET.screenName.p, fieldName: "screenName", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.statusesCount.p, fieldName: "statusesCount", required: false, type: UInt64.self)
-    try _v.visit(field: VTOFFSET.url.p, fieldName: "url", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.verified.p, fieldName: "verified", required: false, type: Bool.self)
+    try _v.visit(field: VT.createdAt, fieldName: "createdAt", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.defaultProfile, fieldName: "defaultProfile", required: false, type: Bool.self)
+    try _v.visit(field: VT.description, fieldName: "description", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.favouritesCount, fieldName: "favouritesCount", required: false, type: UInt64.self)
+    try _v.visit(field: VT.followersCount, fieldName: "followersCount", required: false, type: UInt64.self)
+    try _v.visit(field: VT.friendsCount, fieldName: "friendsCount", required: false, type: UInt64.self)
+    try _v.visit(field: VT.id, fieldName: "id", required: false, type: UInt64.self)
+    try _v.visit(field: VT.lang, fieldName: "lang", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.name, fieldName: "name", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.profileBackgroundColor, fieldName: "profileBackgroundColor", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.profileBackgroundImageUrl, fieldName: "profileBackgroundImageUrl", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.profileBannerUrl, fieldName: "profileBannerUrl", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.profileImageUrl, fieldName: "profileImageUrl", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.profileUseBackgroundImage, fieldName: "profileUseBackgroundImage", required: false, type: Bool.self)
+    try _v.visit(field: VT.screenName, fieldName: "screenName", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.statusesCount, fieldName: "statusesCount", required: false, type: UInt64.self)
+    try _v.visit(field: VT.url, fieldName: "url", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VT.verified, fieldName: "verified", required: false, type: Bool.self)
     _v.finish()
   }
 }
-

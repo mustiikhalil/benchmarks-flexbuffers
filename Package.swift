@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "benchmarks-flexbuffers",
-    platforms: [.macOS(.v15)],
+    platforms: [.macOS(.v26)],
     dependencies: [
       .package(url: "https://github.com/ordo-one/package-benchmark.git", from: "1.27.0"),
       .package(path: "./flatbuffers"),
